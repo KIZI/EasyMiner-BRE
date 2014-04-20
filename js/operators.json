@@ -1,0 +1,10 @@
+{
+"operators": [
+    {"label": "is lower than", "opt": [">", ""]},
+    {"label": "is greater than", "opt": ["<", ""]},
+    {"label": "and", "opt": ["∧", "&&"]},
+    {"label": "or", "opt": ["∨", "||"]},
+    {"label": "not", "opt": ["¬", "!"]},
+    {"label": "is", "opt": ["=", ""]},
+    {"label": "is not", "opt": ["≠", "!="]}
+]}

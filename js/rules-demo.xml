@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="windows-1250"?>
+<AssociationRules xmlns="http://keg.vse.cz/lm/AssociationRules/v1.0"> <!-- asociační pravidla transformovaná do podoby použitelné pro business rules -->
+    <AssociationRule id="uri:rules/rule-1">
+        <Text>duration(12) &gt;:&lt; rating(A)</Text>
+        
+        <Antecedent> <!-- podmínka pravidla -->
+            <Attribute format="uri:/test/format/duration-demo_13_csv251">
+                <Category id="uri:/test/discr-duration-1-1" />
+            </Attribute>
+        </Antecedent>
+        
+        <Consequent>
+            <Cedent connective="Conjunction"><!-- je možná varianta jak jednoho dílčího cedentu, tak také vnoření atributu přímo do antecedentu/consequentu -->
+                <Attribute format="uri:/test/format/rating-demo_13_csv251">
+                    <Category id="uri:test/discr-rat-a" />
+                </Attribute>
+            </Cedent>
+        </Consequent>
+        
+    </AssociationRule>
+    
+    <AssociationRule id="uri:rules/rule-2">
+        <Text>duration(12) or  &gt;:&lt; rating(A)</Text>
+        
+        <Antecedent> <!-- podmínka pravidla -->
+            <Attribute format="uri:/test/format/duration-demo_13_csv251">
+                <Category id="uri:/test/discr-duration-1-1" />
+            </Attribute>
+        </Antecedent>
+        
+        <Consequent>
+            <Cedent connective="Conjunction"><!-- je možná varianta jak jednoho dílčího cedentu, tak také vnoření atributu přímo do antecedentu/consequentu -->
+                <Attribute format="uri:/test/format/rating-demo_13_csv251">
+                    <Category id="uri:test/discr-rat-a" />
+                </Attribute>
+            </Cedent>
+        </Consequent>
+        
+    </AssociationRule>
+    
+    <AssociationRule id="uri:rules/rule-3">
+        <Text>duration(12,20,30) &gt;:&lt; rating(A)</Text>
+        
+        <Antecedent>
+            <Attribute format="uri:/test/format/duration-demo_13_csv251">
+                <Category id="uri:/test/discr-duration-1-1" />
+                <Category id="uri:/test/discr-duration-1-2" />
+            </Attribute>
+        </Antecedent>
+        
+        <Consequent>
+            <Cedent connective="Conjunction">
+                <Attribute format="uri:/test/format/rating-demo_13_csv251">
+                    <Category id="uri:test/discr-rat-a" />
+                </Attribute>
+            </Cedent>
+        </Consequent>
+        
+    </AssociationRule>
+    
+    <AssociationRule id="uri:rules/rule-4">
+        <Text>duration(12) and (district(Praha,Karvina) or amount([4980-122148))) &gt;:&lt; rating(A,C)</Text>
+        
+        <Antecedent>
+            <Cedent connective="Conjunction">
+                <Attribute format="uri:/test/format/duration-demo_13_csv251">
+                    <Category id="uri:/test/discr-duration-1-1" />
+                </Attribute>
+                <Cedent connective="Disjunction">
+                    <Attribute format="uri:/test/format/district-demo_13_csv251">
+                        <Category id="uri:/test/discr-10/x1" />
+                        <Category id="uri:/test/discr-10/x2" />
+                    </Attribute>
+                    <Attribute format="uri:/test/format/amount-demo_13_csv251">
+                        <Category id="uri:/test/discr-4/1" />
+                    </Attribute>
+                </Cedent>
+            </Cedent>
+        </Antecedent>
+        
+        <Consequent>
+            <Cedent connective="Conjunction">
+                <Attribute format="uri:/test/format/rating-demo_13_csv251">
+                    <Category id="uri:test/discr-rat-a" />
+                    <Category id="uri:test/discr-rat-c" />
+                </Attribute>
+            </Cedent>
+        </Consequent>
+        
+    </AssociationRule>
+    
+    <AssociationRule id="uri:rules/rule-5">
+        <Text>salary(highest) and duration(12) and not(district(Praha,Karvina) or amount([4980-122148))) &gt;:&lt; rating(A,C) or rating(B)</Text>
+        
+        <Antecedent>
+            <Cedent connective="Conjunction">
+                <Cedent connective="Conjunction">
+                    <Attribute format="uri:/test/format/salary-demo_13_csv251">
+                        <Category id="uri:/test/discr-2/14" />
+                    </Attribute>
+                </Cedent>
+                <Cedent connective="Conjunction">
+                    <Attribute format="uri:/test/format/duration-demo_13_csv251">
+                        <Category id="uri:/test/discr-duration-1-1" />
+                    </Attribute>
+                </Cedent>
+                <Cedent connective="Negation">
+                    <Cedent connective="Disjunction">
+                        <Attribute format="uri:/test/format/district-demo_13_csv251">
+                            <Category id="uri:/test/discr-10/x1" />
+                            <Category id="uri:/test/discr-10/x2" />
+                        </Attribute>
+                        <Attribute format="uri:/test/format/amount-demo_13_csv251">
+                            <Category id="uri:/test/discr-4/1" />
+                        </Attribute>
+                    </Cedent>
+                </Cedent>
+            </Cedent>
+        </Antecedent>
+        
+        <Consequent>
+            <Cedent connective="Disjunction">
+                <Attribute format="uri:/test/format/rating-demo_13_csv251">
+                    <Category id="uri:test/discr-rat-a" />
+                    <Category id="uri:test/discr-rat-c" />
+                </Attribute>
+                <Attribute format="uri:/test/format/rating-demo_13_csv251">
+                    <Category id="uri:test/discr-rat-b" />
+                </Attribute>
+            </Cedent>
+        </Consequent>
+        
+    </AssociationRule>
+    
+    <AssociationRule id="uri:rules/rule-6">
+        <Text>age(25-31,31-39.6, 40-45) and (not(salary(highest)) and duration(12) and not(district(Praha,Karvina) or amount([4980-122148)))) &gt;:&lt; rating(A,C) or rating(B)</Text>
+        
+        <Antecedent>
+            <Cedent>
+                <Attribute format="uri:/test/format/age-demo_13_csv251">
+                    <Category id="uri:/test/discr-1/2"></Category>
+                    <Category id="uri:/test/discr-1/3"></Category>
+                </Attribute>
+            </Cedent>
+            
+            <Cedent connective="Conjunction">
+                <Cedent connective="Negation">
+                    <Cedent connective="Conjunction">
+                        <Attribute format="uri:/test/format/salary-demo_13_csv251">
+                            <Category id="uri:/test/discr-2/14" />
+                        </Attribute>
+                    </Cedent>
+                </Cedent>
+                <Cedent connective="Conjunction">
+                    <Attribute format="uri:/test/format/duration-demo_13_csv251">
+                        <Category id="uri:/test/discr-duration-1-1" />
+                    </Attribute>
+                </Cedent>
+                <Cedent connective="Negation">
+                    <Cedent connective="Disjunction">
+                        <Attribute format="uri:/test/format/district-demo_13_csv251">
+                            <Category id="uri:/test/discr-10/x1" />
+                            <Category id="uri:/test/discr-10/x2" />
+                        </Attribute>
+                        <Attribute format="uri:/test/format/amount-demo_13_csv251">
+                            <Category id="uri:/test/discr-4/1" />
+                        </Attribute>
+                    </Cedent>
+                </Cedent>
+            </Cedent>
+        </Antecedent>
+        
+        <Consequent>
+            <Cedent connective="Disjunction">
+                <Attribute format="uri:/test/format/rating-demo_13_csv251">
+                    <Category id="uri:test/discr-rat-a" />
+                    <Category id="uri:test/discr-rat-c" />
+                </Attribute>
+                <Attribute format="uri:/test/format/rating-demo_13_csv251">
+                    <Category id="uri:test/discr-rat-b" />
+                </Attribute>
+            </Cedent>
+        </Consequent>
+        
+    </AssociationRule>
+    
+    
+    
+</AssociationRules>

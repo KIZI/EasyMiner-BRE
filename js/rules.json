@@ -1,0 +1,61 @@
+{"rules":
+    {"rule-648":{
+        "Antecedent": [
+            {"connective": "Conjuction", "attrs": [
+                {"connective": "Conjuction", "attrs": [
+                        {"format": "identifikaceFormatu1", "cats": ["discretizace1"]},
+                        {"format": "identifikaceFormatu2", "cats": ["discretizace2-1", "discretizace2-2"]}
+                ]},
+                {"format": "identifikaceFormatu1", "cats": ["discretizace1"]},
+                {"format": "identifikaceFormatu2", "cats": ["discretizace2-1", "discretizace2-2"]}
+            ]}
+        ],
+        "Consequent": [
+            {"connective": "Conjuction", "attrs": [
+                    {"format": "rating", "cats": ["identifikace"]}
+            ]}
+        ]
+    }
+},
+"datas":
+    {"metaattributes/kvalita-uveru-1":{
+        "name": "kvalita úvěru", "formats": [
+            {"format/kvalita-uveru-points-scale": [
+                {"name": "Points of International Loan Quality Scale", "range": "A,B,C,D,E,x", "discrets": [
+                    {"x73938": [
+                        {"name": "Název konkrétní discretizace", "bins": [
+                            {"id": "bins/7929", "name": "dobrý", "vals": ["A","B"]},
+                            {"id": "bins/7923", "name": "nevypadá to dobře", "vals": ["C","D"]},
+                            {"id": "bins/7932", "name": "průšvih", "vals": ["E"]}
+                        ]}
+                    ]}
+                ]}
+            ]},
+            {"format/kvalita-uveru-souvisle": [
+                {"name": "Points of International Loan Quality Scale", "range": "closedClosed,0,10", "discrets": [
+                    {"x73938": [
+                        {"name": "Diskretizace po číslech", "bins": [
+                            {"id": "bins/7929", "name": "povolid", "vals": ["openClosed","0","6"]},
+                            {"id": "bins/7923", "name": "zamítnout", "vals": ["openClosed","6","10"]},
+                            {"id": "bins/7932", "name": "KO", "vals": ["0"]}
+                        ]}
+                    ]}
+                ]}
+            ]}
+        ]
+    }
+},
+"formats":
+    {"format/kvalita-uveru-points-scale":{
+        "name": "Points of International Loan Quality Scale", "metid": "metaattributes/kvalita-uveru-1", 
+                "range": {"Enumeration" : ["A","B","C","D","E","x"]}, "discrets": [
+            {"x73938": [
+                {"name": "Název konkrétní discretizace", "bins": [
+                    {"id": "bins/7929", "name": "dobrý", "vals": ["A","B"]},
+                    {"id": "bins/7923", "name": "nevypadá to dobře", "vals": ["C","D"]},
+                    {"id": "bins/7932", "name": "průšvih", "vals": ["E"]}
+                ]}
+            ]}
+        ]
+    }
+}}

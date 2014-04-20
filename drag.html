@@ -1,0 +1,90 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/jquery-ui-1.10.4.custom.min.css" />
+    </head>
+    <body>
+        
+        <div id="content">
+            <div class="fl">
+                <form>
+                    <fieldset id="Antecedent">
+                        <legend>Podmínka</legend>
+                        <ul class="dragDropBox">
+                            <li class="button noSortable dragDropBoxEnd">)</li>
+                            <li class="button noSortable">(</li>
+                            <!--<li class="button dragDropElmAtt">duration</li>
+                            <li class="button dragDropElmLog">=</li>
+                            <li class="button dragDropElmVal">12</li>-->
+                        </ul>
+                    </fieldset>
+                </form>
+                <form>
+                    <fieldset id="Consequent">
+                        <legend>Execute</legend>
+                        <ul class="dragDropBox">
+                            <li class="button noSortable dragDropBoxEnd">)</li>
+                            <li class="button noSortable">(</li>
+                            <!--<li class="autocompleteBoxElm">rating</li>
+                            <li class="autocompleteBoxElm">=</li>
+                            <li class="autocompleteBoxElm">A</li>-->
+                        </ul>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="fr">
+                <form>
+                    <fieldset id="attributes">
+                        <legend>Metaatributy</legend>
+                        <ul class="draggableBox">
+                            <!--<li class="autocompleteBoxElm">rating</li>
+                            <li class="autocompleteBoxElm">=</li>
+                            <li class="autocompleteBoxElm">A</li>-->
+                        </ul>
+                    </fieldset>
+                </form>
+                <form>
+                    <fieldset id="values">
+                        <legend>Hodnoty</legend>
+                        <ul class="draggableBox">
+                            <!--<li class="button">rating</li>
+                            <li class="button">duration</li>
+                            <li class="button">=</li>
+                            <li class="button">is</li>
+                            <li class="button">not</li>-->
+                        </ul>
+                    </fieldset>
+                </form>
+            </div>
+            <div id="logDiv" class="newRow"></div>
+            <div id="rules" class="newRow">
+                <h2>Pravidla k úpravě</h2>
+                <ul></ul>
+            </div>
+            <ul id="contextMenuUl" style="display: none;">
+                <li><a href="">rating</a></li>
+                <li>duration</li>
+                <li>=</li>
+                <li>is</li>
+                <li>not</li>
+            </ul>
+        </div>
+        <script src="js/jquery-1.11.0.min.js"></script>
+        <script src="js/jquery-ui-1.10.4.custom.min.js"></script>
+        <script src="js/jstorage-0.4.8.min.js"></script>
+        <script src="js/jquery.json2.js"></script>
+        <script src="js/jquery.ui-contextmenu.js"></script>
+        <script src="js/jquery.bre.js"></script>
+        <script src="js/jquery.bre.dragdrop.js"></script>
+        <script>
+        </script>
+    </body>
+</html>
