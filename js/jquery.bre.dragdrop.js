@@ -23,13 +23,6 @@
                 var elmCats = [];
                 var catsCount = parseInt($(this).children('Category').length);
                 $(this).children('Category').each(function(i, e){
-//                    $.each(forJson[format].discrets, function(key, data){
-//                        $.each(data, function(index, val){
-//                            $.each(val, function(i, v){
-//                                alert(v.name);
-//                            })
-//                        })
-//                    });
                     elmCats.push('<li class="button dragDropElmAtt" rel="'+
                             format+'">'+attJson[forJson[format].metid]+'</li>');
                     elmCats.push('<li class="button dragDropElmRel" rel="is">is</li>');
@@ -118,8 +111,7 @@ binToFormat = function(id){
 * Removes all elements from Antecedent and Consequent parts to show new rule instead.
 */
 emptyConExe = function(){
-    $('#Antecedent .button').not('.noSortable').remove();
-    $('#Consequent .button').not('.noSortable').remove();
+    $('#Antecedent .button, #Consequent .button').not('.noSortable').remove();
 };
 
 /** 
@@ -238,6 +230,8 @@ $(document).contextmenu({
             $target.attr('rel', ui.cmd).text(ui.text);
         }
 		}
+}).on('dblclick', '.dragDropBox .button:not(.noSortable)', function (e) {
+    $(document).contextmenu("open", $(this))
 });
 
 $(".dragDropBox").sortable({
@@ -258,4 +252,9 @@ $(".dragDropBox").sortable({
         $(ui.item).click();
     },
     tolerance: "pointer"
+});
+
+$(".dragDropLeft form").mouseover(function(){
+    $('.draggableBoxLog.visible, .draggableBoxRel.visible').removeClass('visible');
+    $(this).find('.draggableBoxLog, .draggableBoxRel').addClass('visible');
 });

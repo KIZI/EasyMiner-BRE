@@ -14,18 +14,25 @@ and open the template in the editor.
     <body>
         
         <div id="content">
-            <div class="fl">
+            <div class="dragDropLeft fl">
                 <form>
                     <fieldset id="Antecedent">
                         <legend>Podmínka</legend>
                         <ul class="dragDropBox">
                             <li class="button noSortable dragDropBoxEnd">)</li>
                             <li class="button noSortable">(</li>
-                            <!--<li class="button dragDropElmAtt">duration</li>
-                            <li class="button dragDropElmLog">=</li>
-                            <li class="button dragDropElmVal">12</li>-->
                         </ul>
                     </fieldset>
+                    <ul class="draggableBox draggableBoxLog">
+                        <li class="button">)</li>
+                        <li class="button">(</li>
+                        <li class="button dragDropElmLog" rel="Conjunction">and</li>
+                        <li class="button dragDropElmLog" rel="Disjunction">or</li>
+                    </ul>
+                    <ul class="draggableBox draggableBoxRel">
+                        <li class="button dragDropElmRel" rel="is">is</li>
+                        <li class="button dragDropElmRel" rel="is not">is not</li>
+                    </ul>
                 </form>
                 <form>
                     <fieldset id="Consequent">
@@ -33,11 +40,18 @@ and open the template in the editor.
                         <ul class="dragDropBox">
                             <li class="button noSortable dragDropBoxEnd">)</li>
                             <li class="button noSortable">(</li>
-                            <!--<li class="autocompleteBoxElm">rating</li>
-                            <li class="autocompleteBoxElm">=</li>
-                            <li class="autocompleteBoxElm">A</li>-->
                         </ul>
                     </fieldset>
+                    <ul class="draggableBox draggableBoxLog">
+                        <li class="button">)</li>
+                        <li class="button">(</li>
+                        <li class="button dragDropElmLog" rel="Conjunction">and</li>
+                        <li class="button dragDropElmLog" rel="Disjunction">or</li>
+                    </ul>
+                    <ul class="draggableBox draggableBoxRel">
+                        <li class="button dragDropElmRel" rel="is">is</li>
+                        <li class="button dragDropElmRel" rel="is not">is not</li>
+                    </ul>
                 </form>
             </div>
             <div class="fr">
@@ -45,9 +59,6 @@ and open the template in the editor.
                     <fieldset id="attributes">
                         <legend>Metaatributy</legend>
                         <ul class="draggableBox">
-                            <!--<li class="autocompleteBoxElm">rating</li>
-                            <li class="autocompleteBoxElm">=</li>
-                            <li class="autocompleteBoxElm">A</li>-->
                         </ul>
                     </fieldset>
                 </form>
@@ -55,11 +66,6 @@ and open the template in the editor.
                     <fieldset id="values">
                         <legend>Hodnoty</legend>
                         <ul class="draggableBox">
-                            <!--<li class="button">rating</li>
-                            <li class="button">duration</li>
-                            <li class="button">=</li>
-                            <li class="button">is</li>
-                            <li class="button">not</li>-->
                         </ul>
                     </fieldset>
                 </form>

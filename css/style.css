@@ -1,10 +1,4 @@
-/* 
-    Document   : style
-    Created on : 20.3.2014, 18:16:19
-    Author     : PVD
-    Description:
-        Purpose of the stylesheet follows.
-*/
+/* Author: PVD */
 
 *{  }
 .fl{ float: left; }
@@ -12,6 +6,7 @@
 .red{ border: red 1px solid; }
 .newRow{ clear: both; }
 .hidden{ display: none; }
+.visible{ visibility: visible !important; }
 
 body{ font-family: "Tahoma", "Arial", "sans-serif"; }
 
@@ -42,7 +37,10 @@ body{ font-family: "Tahoma", "Arial", "sans-serif"; }
                  .autocompleteBoxInp div{ float: left; width: 10px; height: 18px; text-align: center; }
 .autocompleteBox .autocompleteBoxEnd{ position: absolute; right: 5px; bottom: 0; }
 
-.dragDropBox{ position: relative; width: 630px; padding: 0 30px 0 0; list-style-type: none; }
+.dragDropLeft{ width: 720px; overflow: hidden; }
+.dragDropLeft fieldset{ width: 640px; float: left; }
+
+.dragDropBox{ position: relative; width: 610px; padding: 0 30px 0 0; list-style-type: none; }
 .dragDropBox li{ display: inline-table; margin: 2px; }
 .dragDropBox li span{ }
 .dragDropBox .dragDropElmAtt{ color: green; }
@@ -59,9 +57,12 @@ body{ font-family: "Tahoma", "Arial", "sans-serif"; }
    -khtml-user-select: none;
    -webkit-user-select: none;
    user-select: none; }
-.draggableBox{ /*width: 190px; */list-style-type: none; overflow: auto; }
+.draggableBox{ /*width: 190px; */ padding: 0; list-style-type: none; overflow: auto; }
 .draggableBox .button{ cursor: move; /*width: 120px; */}
 .draggablePlace{ display: block; /*width: 100px; */padding: 5px 10px; text-align: center; border: #cacaca 1px dotted; }
+.draggableBoxLog{ visibility: hidden; float: right; width: 50px; margin: 10px 0; }
+.draggableBoxRel{ visibility: hidden; clear: left; }
+.draggableBoxRel .button{ float: left; margin: 5px; overflow: hidden; }
 
 .ui-widget{ padding: 5px; list-style-type: none; border: 1px dotted; border-top: none; background-color: #fff; min-width: 140px !important; }
 .ui-icon-carat-1-e{ position: absolute; top: 20px !important; width: 5px; height: 24px; background: url(../images/arrow.gif) right 8px no-repeat; }

@@ -131,6 +131,7 @@ $.when(
         success: function(data) {
             $(data.operators).each(function() {
                 relJson.push({label: this.label, category: "Log"});
+        $('.draggableBoxRel').append($("<li>").html(this.label).attr('rel',this.label).addClass('button dragDropElmRel'))
             })
         }
     }),
