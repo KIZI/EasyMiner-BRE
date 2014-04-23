@@ -106,9 +106,9 @@
             
 //            att.push({label: attJson[attId], category: "Att"});
             
-            $('#logDiv').append(attId+": "+Format+"<br /><br />");
+//            $('#logDiv').append(attId+": "+Format+"<br /><br />");
         });
-        $('#logDiv').append("<br />");
+//        $('#logDiv').append("<br />");
     };
 
 })(jQuery);
@@ -119,6 +119,7 @@ var forJson = {};
 var catJson = {};
 var binJson = {};
 var relJson = [];
+var actRule;
 
 $.when(
     $.ajax({
@@ -161,6 +162,7 @@ $.when(
 ruleToHtml = function(id) {
     emptyConExe();
     var ruleJson = $.parseXML($.jStorage.get("rule-"+id));
+    actRule = id;
     var $Antecedent = $(ruleJson).find('Antecedent');
     var $Consequent = $(ruleJson).find('Consequent');
     $($Antecedent[0]).rulePartToxHtml('Antecedent');
@@ -173,4 +175,12 @@ ruleToHtml = function(id) {
  */
 $( document ).on("click", ".linkRuleEdit", function(){
     ruleToHtml($(this).attr('rel'));
+});
+
+$('#validateRule').click(function(){
+    var lastId;
+    var ruleXml = '<AssociationRule id="'+actRule+'"><Text></Text><Antecedent>'+
+            $('#Antecedent').validateRule()+'</Antecedent><Consequent>'+
+            $('#Consequent').validateRule()+'</Consequent></AssociationRule>';
+    alert(ruleXml);
 });

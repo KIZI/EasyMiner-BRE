@@ -3,7 +3,7 @@
 *{  }
 .fl{ float: left; }
 .fr{ float: right; }
-.red{ border: red 1px solid; }
+.red{ border: red 1px solid !important; }
 .newRow{ clear: both; }
 .hidden{ display: none; }
 .visible{ visibility: visible !important; }

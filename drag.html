@@ -14,6 +14,7 @@ and open the template in the editor.
     <body>
         
         <div id="content">
+            <div id="errorBox"></div>
             <div class="dragDropLeft fl">
                 <form>
                     <fieldset id="Antecedent">
@@ -24,14 +25,12 @@ and open the template in the editor.
                         </ul>
                     </fieldset>
                     <ul class="draggableBox draggableBoxLog">
-                        <li class="button">)</li>
-                        <li class="button">(</li>
+                        <li class="button dragDropBracket">)</li>
+                        <li class="button dragDropBracket">(</li>
                         <li class="button dragDropElmLog" rel="Conjunction">and</li>
                         <li class="button dragDropElmLog" rel="Disjunction">or</li>
                     </ul>
                     <ul class="draggableBox draggableBoxRel">
-                        <li class="button dragDropElmRel" rel="is">is</li>
-                        <li class="button dragDropElmRel" rel="is not">is not</li>
                     </ul>
                 </form>
                 <form>
@@ -43,14 +42,12 @@ and open the template in the editor.
                         </ul>
                     </fieldset>
                     <ul class="draggableBox draggableBoxLog">
-                        <li class="button">)</li>
-                        <li class="button">(</li>
+                        <li class="button dragDropBracket">)</li>
+                        <li class="button dragDropBracket">(</li>
                         <li class="button dragDropElmLog" rel="Conjunction">and</li>
                         <li class="button dragDropElmLog" rel="Disjunction">or</li>
                     </ul>
                     <ul class="draggableBox draggableBoxRel">
-                        <li class="button dragDropElmRel" rel="is">is</li>
-                        <li class="button dragDropElmRel" rel="is not">is not</li>
                     </ul>
                 </form>
             </div>
@@ -62,6 +59,8 @@ and open the template in the editor.
                         </ul>
                     </fieldset>
                 </form>
+                <br/>
+                <button id="validateRule">Validovat pravidlo</button>
                 <form>
                     <fieldset id="values">
                         <legend>Hodnoty</legend>
