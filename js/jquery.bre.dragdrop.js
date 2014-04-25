@@ -88,7 +88,7 @@
         if(!$(this[i+1]).hasClass('dragDropElmRel')){
             showError('očekáván operátor', this[i+1]);
         }
-        if(!$(this[i+2]).hasClass('dragDropElmVal')){
+        if(!$(this[i+2]).hasClass('dragDropElmBin') && !$(this[i+2]).hasClass('dragDropElmVal')){
             showError('očekávána hodnota', this[i+2]);
         }
         var categories = '<Category id="'+$(this[i+2]).attr('rel')+'" />';
@@ -111,19 +111,20 @@
     * Validates cedent rule part to XML. Array of objects are inside brackets.
     */
     $.fn.validateCedent = function(fromI){
-        var attrs = [];
-        var connective;
-        for(var i=0;i<this.length;i++){
+        var attrs = [],
+            connective,
+            negation = false;
+        for(var i=fromI;i<this.length;i++){
             if($(this[i]).text() === '('){
                 var bracketsInside = 0;
                 var cedent = [];
-                for(j=i+1;j<this.length;j++){
+                for(var j=i+1;j<this.length;j++){
                     if($(this[j]).text() === '('){
                         bracketsInside++;
                     }
                     else if($(this[j]).text() === ')'){
                         if(bracketsInside === 0){
-                            i=j;
+//                            i=j;
                             break;
                         }
                         else{
@@ -132,14 +133,22 @@
                     }
                     cedent.push($(this[j]));
                 }
-                var subAttrs = $(cedent).validateCedent(i);
+                i += parseInt(cedent.length)+1;
+                var subAttrs = $(cedent).validateCedent(0),
+                    subAtt = subAttrs[0];
                 if(subAttrs[0].match(/Attribute/g).length>2){
-                attrs.push('<Cedent connective="'+subAttrs[1]+'">'+
-                        subAttrs[0]+'</Cedent>');
+                    subAtt = '<Cedent connective="'+subAttrs[1]+'">'+
+                        subAtt+'</Cedent>';
                 }
-                else{
-                    attrs.push(subAttrs[0]);
+                if(negation){
+                    subAtt = '<Cedent connective="Negation">'+
+                        subAtt+'</Cedent>';
+                    negation = false;
                 }
+                attrs.push(subAtt);
+            }
+            else if($(this[i]).attr('rel') === 'Negation'){
+                negation = true;
             }
             else if($(this[i]).hasClass('dragDropElmLog')){
                 connective = $(this[i]).attr('rel');
@@ -183,6 +192,36 @@
             }
         }
         else{
+            $('.dragDropElmRel', this).each(function(){
+                var $this = $(this),
+                    $next = $this.next(),
+                    relid = $this.attr('rel'),
+                    relok = false;
+                while($next.hasClass('dragDropElmRel')){
+                    $this.append(' '+$next.text()).attr('rel', relid+' '+$next.attr('rel'));
+                    $next.remove();
+                    $next = $this.next();
+                }
+                $.each(rels, function(key, data){
+                    if(data.label === $this.text()){
+                        relok = true;
+                        return false;
+                    }
+                });
+                if(!relok){
+                    showError('Operátor není povolen.',$this);
+                }
+            });
+            $(".dragDropElmRel:contains('not')", this).each(function(){
+                var $this = $(this),
+                    $next = $this.next();
+                if($next.text() === '('){
+                    $this.removeClass('dragDropElmRel').addClass('dragDropElmLog').attr('rel', 'Negation');
+                }
+                else{
+                    showError('Nevalidní umístění negace.',$this);
+                }
+            });
             var validatedRule = $('.dragDropBox .button:not(.noSortable)', this).validateCedent(0);
             if(typeof validatedRule[1] !== "undefined"){
                 return('<Cedent connective="'+validatedRule[1]+'">'+
