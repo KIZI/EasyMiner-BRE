@@ -4,6 +4,16 @@
  */
 (function($){
     
+    /**
+     * Overwrites original jQuery selector :contains to Case-Insensitive version.
+     * Source: http://css-tricks.com/snippets/jquery/make-jquery-contains-case-insensitive/
+     */
+    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+        return function( elem ) {
+            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
+    
     /** 
     * Converts XML Interval to JSON.
     */
@@ -76,7 +86,7 @@
 //                            Bins.push('{"id": "'+$(this).attr('id')+'", "name": "'+
 //                                    $(this).children('Name').text()+'", "vals": ['+
 //                                    $(this).children('Interval').intervalToJson()+']}');
-                            binJson[forId][$(this).attr('id')] = $.parseJSON('{"name": "'+
+                            binJson[forId][$(this).attr('id')] = $.parseJSON('{"name": "in '+
                                     $(this).children('Name').text()+'", "vals": ['+
                                     $(this).children('Interval').intervalToJson()+']}');
                         });
@@ -118,21 +128,25 @@ var attJson = {};
 var forJson = {};
 var catJson = {};
 var binJson = {};
-var relJson = [];
+var rels = [];
+var relJson = {};
 var actRule;
 
 $.when(
     $.ajax({
         url: "js/operators.json",
         dataType: "json",
-        error: function (xhr, ajaxOptions, thrownError) {
-            alert(xhr.status);
-            alert(thrownError);
-          },
+//        error: function (xhr, ajaxOptions, thrownError) {
+//            alert(xhr.status);
+//            alert(thrownError);
+//          },
         success: function(data) {
             $(data.operators).each(function() {
-                relJson.push({label: this.label, category: "Log"});
-        $('.draggableBoxRel').append($("<li>").html(this.label).attr('rel',this.label).addClass('button dragDropElmRel'))
+                rels.push({label: this.label, category: "Log"});
+//                relJson[this.label] = '{"visible": '
+                if(this.visible){
+                    $('.draggableBoxRel').append($("<li>").html(this.label).attr('rel',this.label).addClass('button dragDropElmRel'))
+                }
             })
         }
     }),

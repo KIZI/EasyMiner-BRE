@@ -18,21 +18,20 @@ and open the template in the editor.
             <div class="dragDropLeft fl">
                 <form>
                     <fieldset id="Antecedent">
-                        <legend>Podmínka</legend>
+                        <legend>Condition</legend>
                         <ul class="dragDropBox">
                             <li class="button noSortable dragDropBoxEnd">)</li>
                             <li class="button noSortable">(</li>
                         </ul>
                     </fieldset>
-                    <ul class="draggableBox draggableBoxLog">
-                        <li class="button dragDropBracket">)</li>
+                    <ul class="draggableBox draggableBoxRel">
                         <li class="button dragDropBracket">(</li>
+                        <li class="button dragDropBracket">)</li>
                         <li class="button dragDropElmLog" rel="Conjunction">and</li>
                         <li class="button dragDropElmLog" rel="Disjunction">or</li>
                     </ul>
-                    <ul class="draggableBox draggableBoxRel">
-                    </ul>
                 </form>
+                <div class="newRow"></div>
                 <form>
                     <fieldset id="Consequent">
                         <legend>Execute</legend>
@@ -41,37 +40,51 @@ and open the template in the editor.
                             <li class="button noSortable">(</li>
                         </ul>
                     </fieldset>
-                    <ul class="draggableBox draggableBoxLog">
-                        <li class="button dragDropBracket">)</li>
+                    <ul class="draggableBox draggableBoxRel">
                         <li class="button dragDropBracket">(</li>
+                        <li class="button dragDropBracket">)</li>
                         <li class="button dragDropElmLog" rel="Conjunction">and</li>
                         <li class="button dragDropElmLog" rel="Disjunction">or</li>
                     </ul>
-                    <ul class="draggableBox draggableBoxRel">
-                    </ul>
                 </form>
+                <div class="newRow"></div>
+                <div class="fr">
+                    <button id="newRule">New rule</button>
+                    <button id="validateRule">Save rule</button>
+                </div>
             </div>
             <div class="fr">
                 <form>
                     <fieldset id="attributes">
-                        <legend>Metaatributy</legend>
-                        <ul class="draggableBox">
-                        </ul>
+                        <legend>Metaattributes</legend>
+                        <input type="text" placeholder="search..." class="dragDropSearch" />
+                        <a href="#" title="Reset" class="dragDropSearchReset">x</a>
+                        <div class="scrollable">
+                            <ul class="draggableBox">
+                            </ul>
+                        </div>
                     </fieldset>
                 </form>
-                <br/>
-                <button id="validateRule">Validovat pravidlo</button>
                 <form>
                     <fieldset id="values">
-                        <legend>Hodnoty</legend>
-                        <ul class="draggableBox">
-                        </ul>
+                        <legend>Bins & values</legend>
+                        <input type="text" placeholder="search..." class="dragDropSearch" />
+                        <a href="#" title="Reset" class="dragDropSearchReset">x</a>
+                        <div class="scrollable">
+                            <h4>Bins</h4>
+                            <ul class="draggableBox draggableBins">
+                                <li class="draggableBoxInfo">To have options click on element in condition or execute box.</li>
+                            </ul>
+                            <h4>Values</h4>
+                            <ul class="draggableBox draggableVals">
+                            </ul>
+                        </div>
                     </fieldset>
                 </form>
             </div>
             <div id="logDiv" class="newRow"></div>
             <div id="rules" class="newRow">
-                <h2>Pravidla k úpravě</h2>
+                <h2>Rules to edit</h2>
                 <ul></ul>
             </div>
             <ul id="contextMenuUl" style="display: none;">

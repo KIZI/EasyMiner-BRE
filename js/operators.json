@@ -1,10 +1,14 @@
 {
 "operators": [
-    {"label": "is lower than", "opt": [">", ""]},
-    {"label": "is greater than", "opt": ["<", ""]},
-    {"label": "and", "opt": ["∧", "&&"]},
-    {"label": "or", "opt": ["∨", "||"]},
-    {"label": "not", "opt": ["¬", "!"]},
-    {"label": "is", "opt": ["=", ""]},
-    {"label": "is not", "opt": ["≠", "!="]}
+    {"visible": true, "label": "is", "opt": ["=", ""]},
+    {"visible": true, "label": "lower than", "opt": [">", ""]},
+    {"visible": true, "label": "greater than", "opt": ["<", ""]},
+    {"visible": true, "label": "not", "opt": ["¬", "!"]},
+    {"visible": false, "label": "and", "opt": ["∧", "&&"]},
+    {"visible": false, "label": "or", "opt": ["∨", "||"]},
+    {"visible": false, "label": "is lower than", "opt": [">", ""]},
+    {"visible": false, "label": "is greater than", "opt": ["<", ""]},
+    {"visible": false, "label": "is not", "opt": ["≠", "!="]},
+    {"visible": false, "label": "is not lower than", "opt": [">", ""]},
+    {"visible": false, "label": "is not greater than", "opt": ["<", ""]}
 ]}

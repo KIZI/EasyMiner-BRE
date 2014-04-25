@@ -7,41 +7,59 @@
     /** 
     * Converts XML of Cedents to HTML.
     */
-    $.fn.cedentToxHtml = function() {  
-        var Cedents = [];
+    $.fn.cedentToxHtml = function(){
+        var elmAttrs = [];
         var bracketLeft = '<li class="button dragDropBracket">(</li>';
         var bracketRight = '<li class="button dragDropBracket">)</li>';
         var connective = $(this).attr('connective');
         var attrsCount = parseInt($(this).children().length);
         $(this).children().each(function(i, e){
-            var elmAttrs = [];
             if($(this)[0].nodeName == 'Cedent'){
-                elmAttrs.push($(this).cedentToxHtml());
+                var attributes = $(this).cedentToxHtml(),
+                    cedentConnective = $(this).attr('connective');
+                if(attrsCount>1 && attributes.length>1){
+                    elmAttrs.push(bracketLeft+attributes.join('')+bracketRight);
+                }
+                else if(cedentConnective == 'Negation'){
+                    elmAttrs.push('<li class="button dragDropElmLog" rel="'+
+                            cedentConnective+'">'+connections[cedentConnective]+
+                            '</li>'+bracketLeft+attributes.join('')+bracketRight);
+                }
+                else{
+                    elmAttrs.push(attributes.join(''));
+                }
             }
             else if($(this)[0].nodeName == 'Attribute'){
                 var format = $(this).attr('format');
                 var elmCats = [];
                 var catsCount = parseInt($(this).children('Category').length);
                 $(this).children('Category').each(function(i, e){
+                    var binType = Object.getOwnPropertyNames(forJson[format].range);
+                    var binTitle = '';
                     elmCats.push('<li class="button dragDropElmAtt" rel="'+
                             format+'">'+attJson[forJson[format].metid]+'</li>');
                     elmCats.push('<li class="button dragDropElmRel" rel="is">is</li>');
-                    elmCats.push('<li class="button dragDropElmVal" rel="'+
+                    if(binType == 'Value'){
+                        binTitle = ' title="'+binJson[format][$(this).attr('id')].vals+'"';
+                    }
+                    elmCats.push('<li class="button dragDropElmBin"'+binTitle+' rel="'+
                             $(this).attr('id')+'">'+binJson[format][$(this).attr('id')].name+'</li>');
                     if(i<(catsCount-1)){
                         elmCats.push('<li class="button dragDropElmLog" rel="Disjunction">or</li>');
                     }
                 });
-                elmAttrs.push(elmCats.join(''));
-            }
-            if(connective == 'Negation'){
-                elmAttrs.unshift(bracketLeft);
-                elmAttrs.unshift('<li class="button dragDropElmLog" rel="'+connective+'">'+connections[connective]+'</li>');
-                elmAttrs.push(bracketRight);
-            }
-            if(attrsCount > '1'){
-                elmAttrs.unshift(bracketLeft);
-                elmAttrs.push(bracketRight);
+                if(elmCats.length>3){
+                    if(attrsCount>1){
+                        elmAttrs.push(bracketLeft+elmCats.join('')+bracketRight);
+                    }
+                    else{
+                        elmAttrs.push(elmCats.join(''));
+                        elmAttrs.push('');
+                    }
+                }
+                else{
+                    elmAttrs.push(elmCats.join(''));
+                }
             }
             if(i<(attrsCount-1)){
                 if(typeof connective == 'undefined'){
@@ -49,19 +67,8 @@
                 }
                 elmAttrs.push('<li class="button dragDropElmLog" rel="'+connective+'">'+connections[connective]+'</li>');
             }
-            Cedents.push(elmAttrs.join(''));
         });
-        return(Cedents.join(''));
-    };
-    
-    /** 
-    * Insert button elements into the box of values.
-    */
-    $.fn.processValues = function(){
-        $('#values .draggableBox li:not(.ui-sortable-helper)').remove();
-        $.each(this[0], function(key, data){
-            $('#values .draggableBox').append($("<li>").html(data.name).attr('rel',key).addClass('button dragDropElmVal'))
-        });
+        return(elmAttrs);
     };
     
     /** 
@@ -70,7 +77,7 @@
     */
     $.fn.rulePartToxHtml = function(id){
         var $actNode = $(this[0]);
-        $('#'+id+' .dragDropBox').append($actNode.cedentToxHtml());
+        $('#'+id+' .dragDropBox').append($actNode.cedentToxHtml().join(''));
     };
     
     /** 
@@ -197,6 +204,35 @@ processData = function(){
         $('#attributes .draggableBox').append($("<li>").html(attJson[data.metid]).attr('rel',key).addClass('button dragDropElmAtt'))
     });
 };
+    
+/** 
+* Insert button elements into the box of values.
+* @param {String} format id of format
+*/
+processValues = function(format){
+    var form = forJson[format],
+        bins = binJson[format],
+        type = Object.getOwnPropertyNames(form.range);
+    $('#values .draggableBox li').remove();
+    $.each(bins, function(key, data){
+        var $li = $("<li>").html(data.name).attr('rel',key).addClass('button dragDropElmBin');
+        if(type == 'Value'){ $li.attr('title',data.vals); }
+        $('#values .draggableBins').append($li);
+    });
+
+    var $prev = $('#values .draggableVals').prev();
+    $prev.show();
+    if(type == 'Value'){
+        $('#values .draggableVals li:not(.ui-sortable-helper)').remove();
+        $(form.range.Value).each(function(){
+            $('#values .draggableVals').append($("<li>").html(this).attr('rel','').addClass('button dragDropElmVal'))
+        });
+    }
+    else{
+        $prev.hide();
+    }
+    $('#values .dragDropSearchReset').click();
+};
 
 /**
  * 
@@ -215,19 +251,20 @@ showError = function(text, elm){
 /** 
 * Find format which bin from param belong to.
 * @param {String} id of bin
+* @return {String} id of format
 */
 binToFormat = function(id){
-    var finded = false; // used due to interrupting the cycle => performance
+    var found = false; // used due to interrupting the cycle => performance
     var result;
-    $.each(binJson, function(key, bins){
-        $.each(bins, function(key, data){
-            if(key == id){
-                result = bins;
-                finded = true;
+    $.each(binJson, function(keyFor, bins){
+        $.each(bins, function(keyBin, data){
+            if(keyBin === id){
+                result = keyFor;
+                found = true;
                 return false;
             }
         });
-        if(finded){
+        if(found){
             return false;
         }
     });
@@ -259,7 +296,7 @@ $(document).on("mouseover", ".draggableBox li", function(){
             addClasses: false,
             connectToSortable: ".dragDropBox",
             containment: "#content",
-            cursorAt: {left: 0, top: 0},
+//            cursorAt: {left: 0, top: 0},
             helper: "clone",
             opacity: 0.7,
             drag: function(event,ui){
@@ -276,15 +313,18 @@ $(document).on('click', '.dragDropBox .button:not(.noSortable)', function (e) {
     $('.dragDropBox').find('.ui-selected').removeClass('ui-selected');
     $(this).addClass('ui-selected');
     if($(this).hasClass('dragDropElmAtt')){
-        $(binJson[$(this).attr('rel')]).processValues();
+        var format = $(this).attr('rel');
+        processValues(format);
+        
     }
-    else if($(this).hasClass('dragDropElmVal')){
+    else if($(this).hasClass('dragDropElmBin')){
         var valId = $(this).attr('rel');
         if($('#values .draggableBox').find("li[rel='"+valId+"']").length == 0){
-            var vals = binToFormat(valId);
-            $(vals).processValues();
+            var format = binToFormat(valId);
+            processValues(format);
         }
     }
+    $('.dragDropSearch').blur();
 });
 
 /*
@@ -292,7 +332,7 @@ $(document).on('click', '.dragDropBox .button:not(.noSortable)', function (e) {
  * backspace or delete, removes this button and selects previous or next one.
  */
 $(document).keydown(function(e){
-    if($('.ui-selected').length > 0){
+    if($('.ui-selected').length > 0 && !$(document.activeElement).hasClass('dragDropSearch')){
         if(e.keyCode == 46){
             e.preventDefault();
             var $next = $('.ui-selected').next();
@@ -324,6 +364,7 @@ $(document).contextmenu({
         var $menu = ui.menu,
             $target = ui.target,
             newVals = {},
+            finMenu = [],
             actId = $target.attr('rel'),
             extraData = ui.extraData; // passed when menu was opened by call to open()
         if($target.hasClass('dragDropElmVal')){
@@ -334,6 +375,7 @@ $(document).contextmenu({
                     cmd: key
                 };
             });
+            finMenu.push({title: "zaměnit za", children: newVals});
         }
         else if($target.hasClass('dragDropElmAtt')){
             newVals = $.map(forJson, function(data, key){
@@ -344,9 +386,11 @@ $(document).contextmenu({
                     };
                 }
             });
+            finMenu.push({title: "zaměnit za", children: newVals});
         }
-			$(document).contextmenu("replaceMenu", [{title: "zaměnit za", children: newVals}, {title: "smazat", cmd: "erase"}]);
-      $(this).data("startingScrollTop",$target);
+        finMenu.push({title: "smazat", cmd: "erase"});
+        $(document).contextmenu("replaceMenu", finMenu);
+        $(this).data("startingScrollTop",$target);
 		},
 		select: function(event, ui){
         $target = $(this).data("startingScrollTop");
@@ -373,15 +417,55 @@ $(".dragDropBox").sortable({
             return;
         }
     },
-    revert: true,
+//    revert: true,
     scroll: false,
-    start: function(event, ui){
-        $(ui.item).click();
+    tolerance: "pointer",
+    beforeStop: function(e, ui){
+        if(removeIntent){ ui.item.remove(); }
     },
-    tolerance: "pointer"
+    out: function(e, ui){
+        removeIntent = true;
+        ui.item.addClass('toRemove');
+    },
+    over: function(e, ui){
+        removeIntent = false;
+        ui.item.removeClass('toRemove');
+    },
+    start: function(e, ui){
+        ui.item.addClass('moving');
+        ui.item.click();
+        $('li.ui-draggable-dragging').addClass('visible');
+    },
+    stop: function(e, ui){
+        ui.item.removeClass('toRemove').removeClass('moving');
+    }
 });
 
 $(".dragDropLeft form").mouseover(function(){
-    $('.draggableBoxLog.visible, .draggableBoxRel.visible').removeClass('visible');
-    $(this).find('.draggableBoxLog, .draggableBoxRel').addClass('visible');
+    $('.draggableBoxRel.visible').removeClass('visible');
+//    $('.draggableBoxRel.visible li.ui-draggable-dragging)').addClass('visible');
+    $(this).find('.draggableBoxRel').addClass('visible');
+});
+
+/*
+ * Filter list of elements in metaattribute or bins box.
+ */
+$('.dragDropSearch').keyup(function(){
+    var value = $(this).val();
+    var $list = $(this).siblings('.scrollable');
+    
+    if(value === ''){
+        $('li', $list).show();
+    }
+    else{
+        $('li:not(:contains('+value+'))', $list).hide(); 
+        $('li:contains('+value+')', $list).show();
+    }
+});
+
+/*
+ * Resets search input in metaattribute or bins box.
+ */
+$('.dragDropSearchReset').click(function(){
+    $(this).siblings('.dragDropSearch').val('').keyup();
 });
