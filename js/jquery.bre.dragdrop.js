@@ -91,18 +91,26 @@
         if(!$(this[i+2]).hasClass('dragDropElmBin') && !$(this[i+2]).hasClass('dragDropElmVal')){
             showError('očekávána hodnota', this[i+2]);
         }
+        var binFormat = binToFormat($(this[i+2]).attr('rel'));
+        if(binFormat !== $(this[i]).attr('rel')){
+            showError('hodnotu nelze přiřadit k zvolenému atributu', this[i+2]);
+        }
         var categories = '<Category id="'+$(this[i+2]).attr('rel')+'" />';
         if($(this[i+3]).attr('rel') === 'Disjunction' &&
                 $(this[i+4]).attr('rel') === $(this[i]).attr('rel')){
             categories += $(this).getAttribute(i+4);
-            lastId += 3;
+            lastId += 4;
         }
+//        else if(!$(this[i+3]).hasClass('dragDropElmLog')){
+//            lastId = 2;
+//            showError('očekávána logická spojka', this[i+3]);
+//        }
         else if($(this[i+3]).attr('rel') === $(this[i]).attr('rel')){
-            lastId = 3;
+            lastId = 2;
             showError('očekávána logická spojka or', this[i+3]);
         }
         else{
-            lastId = 3;
+            lastId = 2;
         }
         return categories;
     };
@@ -115,6 +123,7 @@
             connective,
             negation = false;
         for(var i=fromI;i<this.length;i++){
+            var thisRel = $(this[i]).attr('rel');
             if($(this[i]).text() === '('){
                 var bracketsInside = 0;
                 var cedent = [];
@@ -147,23 +156,29 @@
                 }
                 attrs.push(subAtt);
             }
-            else if($(this[i]).attr('rel') === 'Negation'){
+            else if(thisRel === 'Negation'){
                 negation = true;
             }
             else if($(this[i]).hasClass('dragDropElmLog')){
-                connective = $(this[i]).attr('rel');
+                if(typeof connective != 'undefined' && connective != thisRel){
+                    showError('chybí závorky při použití odlišných logických spojek', this[i]);
+                }
+                else{
+                    connective = thisRel;
+                }
             }
             else{
                 if($(this[i]).hasClass('dragDropElmAtt')){
                     lastId = 0;
-                    var attribute = '<Attribute format="'+$(this[i]).attr('rel')+'">'+
-                            $(this).getAttribute(i)+
-                            '</Attribute>';
+                    var attribute = '<Attribute format="'+thisRel+'">'+
+                            $(this).getAttribute(i)+'</Attribute>';
                     i += lastId;
+                }
+                else if($(this[i-1]).hasClass('dragDropElmBin') || $(this[i-1]).hasClass('dragDropElmVal')){
+                    showError('očekávána logická spojka', this[i]);
                 }
                 else{
                     showError('očekáván atribut', this[i]);
-                    break;
                 }
                 attrs.push(attribute);
             }
@@ -219,7 +234,7 @@
                     $this.removeClass('dragDropElmRel').addClass('dragDropElmLog').attr('rel', 'Negation');
                 }
                 else{
-                    showError('Nevalidní umístění negace.',$this);
+                    showError('Nevalidní umístění negace, musí být umístěna před závorku, jejíž obsah má být negován.',$this);
                 }
             });
             var validatedRule = $('.dragDropBox .button:not(.noSortable)', this).validateCedent(0);
@@ -234,6 +249,58 @@
     };
 
 })(jQuery);
+
+/** 
+* Find format which bin from param belong to.
+* @param {String} id of bin
+* @return {String} id of format
+*/
+binToFormat = function(id){
+    var found = false; // used due to interrupting the cycle => performance
+    var result;
+    $.each(binJson, function(keyFor, bins){
+        $.each(bins, function(keyBin, data){
+            if(keyBin === id){
+                result = keyFor;
+                found = true;
+                return false;
+            }
+        });
+        if(found){
+            return false;
+        }
+    });
+    return result;
+};
+
+/** 
+* Removes all elements from Antecedent and Consequent parts to show new rule instead.
+*/
+emptyConExe = function(){
+    $('#Antecedent .button, #Consequent .button').not('.noSortable').remove();
+};
+
+/**
+ * Checks if value is in interval.
+ * @param {json} interval
+ * @param {integer} val
+ * @returns {boolean}
+ */
+isValueInInterval = function(interval, val){
+    if(interval[0][0] === 'closedClosed'){
+        return (interval[0][1] <= val && val <= interval[0][2]);
+    }
+    else if(interval[0][0] === 'closedOpen'){
+        return (interval[0][1] <= val && val < interval[0][2]);
+    }
+    else if(interval[0][0] === 'openClosed'){
+        return (interval[0][1] < val && val <= interval[0][2]);
+    }
+    else if(interval[0][0] === 'openOpen'){
+        return (interval[0][1] < val && val < interval[0][2]);
+    }
+    else{ return false; }
+};
 
 /** 
 * Processes attributes to insert into the box of attributes.
@@ -270,51 +337,31 @@ processValues = function(format){
     else{
         $prev.hide();
     }
-    $('#values .dragDropSearchReset').click();
+    $('#values .draggableSearchReset').click();
 };
 
 /**
- * 
+ * Shows error message using showSmallError function and throws SyntaxError,
+ * which interrupts other JS executes.
  * @param text {String} Text of error
  * @param elm {jQuery object} which element error belongs to 
  * @throws {SyntaxError} Error with original text to interrupt other JS operations
  */
 showError = function(text, elm){
+    showSmallError(text, elm);
+    throw { name: 'SyntaxError', message: text };
+};
+
+/**
+ * Shows error message and notices on bad elm, if is got.
+ * @param text {String} Text of error
+ * @param elm {jQuery object} which element error belongs to 
+ */
+showSmallError = function(text, elm){
     if(elm !== null){
         $(elm).addClass('red');
     }
     $('#errorBox').text(text);
-    throw { name: 'SyntaxError', message: text };
-};
-
-/** 
-* Find format which bin from param belong to.
-* @param {String} id of bin
-* @return {String} id of format
-*/
-binToFormat = function(id){
-    var found = false; // used due to interrupting the cycle => performance
-    var result;
-    $.each(binJson, function(keyFor, bins){
-        $.each(bins, function(keyBin, data){
-            if(keyBin === id){
-                result = keyFor;
-                found = true;
-                return false;
-            }
-        });
-        if(found){
-            return false;
-        }
-    });
-    return result;
-};
-
-/** 
-* Removes all elements from Antecedent and Consequent parts to show new rule instead.
-*/
-emptyConExe = function(){
-    $('#Antecedent .button, #Consequent .button').not('.noSortable').remove();
 };
 
 /** 
@@ -338,11 +385,34 @@ $(document).on("mouseover", ".draggableBox li", function(){
 //            cursorAt: {left: 0, top: 0},
             helper: "clone",
             opacity: 0.7,
-            drag: function(event,ui){
+            drag: function(e, ui){
                 ui.position.top = parseInt(ui.offset.top);
             }
         });
     }
+});
+
+/*
+ * Filter list of elements in metaattribute or bins box.
+ */
+$('.draggableSearch').keyup(function(){
+    var value = $(this).val();
+    var $list = $(this).siblings('.scrollable');
+    
+    if(value === ''){
+        $('li', $list).show();
+    }
+    else{
+        $('li:not(:contains('+value+'))', $list).hide(); 
+        $('li:contains('+value+')', $list).show();
+    }
+});
+
+/*
+ * Resets search input in metaattribute or bins box.
+ */
+$('.draggableSearchReset').click(function(){
+    $(this).siblings('.draggableSearch').val('').keyup();
 });
 
 /*
@@ -363,7 +433,7 @@ $(document).on('click', '.dragDropBox .button:not(.noSortable)', function (e) {
             processValues(format);
         }
     }
-    $('.dragDropSearch').blur();
+    $('input:focus').blur();
 });
 
 /*
@@ -371,18 +441,21 @@ $(document).on('click', '.dragDropBox .button:not(.noSortable)', function (e) {
  * backspace or delete, removes this button and selects previous or next one.
  */
 $(document).keydown(function(e){
-    if($('.ui-selected').length > 0 && !$(document.activeElement).hasClass('dragDropSearch')){
-        if(e.keyCode == 46){
+    if($('.ui-selected').length > 0 && !$(document.activeElement).is('input')){
+        if(e.which == 46){
             e.preventDefault();
             var $next = $('.ui-selected').next();
             $('.ui-selected').remove();
             $($next).addClass('ui-selected');
         }
-        else if(e.keyCode == 8){
+        else if(e.which == 8){
             e.preventDefault();
             var $prev = $('.ui-selected').prev();
             $('.ui-selected').remove();
             $($prev).not('.noSortable').addClass('ui-selected');
+        }
+        else if(e.which == 27){
+            $(document).trigger("mouseup");
         }
     }
 }) 
@@ -392,7 +465,7 @@ $(document).keydown(function(e){
  * Source: https://plugins.jquery.com/ui-contextmenu/
  */
 $(document).contextmenu({
-    delegate: ".dragDropBox .button",
+    delegate: ".dragDropBox .button:not(.noSortable)",
     preventContextMenuForPopup: true,
     preventSelect: true,
     position: function(event, ui){
@@ -470,13 +543,59 @@ $(".dragDropBox").sortable({
         removeIntent = false;
         ui.item.removeClass('toRemove');
     },
+    receive: function(e, ui){
+    },
     start: function(e, ui){
         ui.item.addClass('moving');
         ui.item.click();
+        newRel = $('li.ui-draggable-dragging').hasClass('dragDropElmRel');
         $('li.ui-draggable-dragging').addClass('visible');
     },
     stop: function(e, ui){
         ui.item.removeClass('toRemove').removeClass('moving');
+        var itemRel = ui.item.attr('rel');
+        if(itemRel.indexOf('than')>0){
+            var $prev = ui.item.prev();
+            while(typeof $prev.attr('rel') != "undefined" && !$prev.hasClass('dragDropElmAtt')){
+                $prev = $prev.prev();
+            }
+            if($prev.hasClass('dragDropElmAtt')){
+                var att = forJson[$prev.attr('rel')];
+                if(Object.getOwnPropertyNames(att.range) == "Interval"){
+                    Apprise('Which value should '+$prev.text()+' be '+itemRel+'?', {
+                        animation: 10,
+                        buttons: {
+                            confirm: {
+                                text: 'OK',
+                                className: '',
+                                action: function(e){
+//                                    isValueInInt(att.range.Interval, e.input);
+                                    if(isValueInInterval(att.range.Interval, e.input)){
+                                        $(ui.item).after('<li class="button dragDropElmVal" rel="'+
+                            e.input+'">'+e.input+'</li>')
+                                    }
+                                    else{
+                                        $(ui.item).remove();
+                                        showSmallError('This value is not in possible interval of attribute.', null);
+                                    }
+                                    Apprise('close');
+                                }
+                            }
+                        },
+                        input: true,
+                        opacity: '0.80'
+                    });
+                }
+                else{
+                    $(ui.item).remove();
+                    showSmallError('Last metaattribute '+$prev.text()+' has no option to be used with operator '+itemRel+'!', null);
+                }
+            }
+            else{
+                $(ui.item).remove();
+                showSmallError('There is no metaattribute which value should be '+itemRel+'!', null);
+            }
+        }
     }
 });
 
@@ -484,27 +603,4 @@ $(".dragDropLeft form").mouseover(function(){
     $('.draggableBoxRel.visible').removeClass('visible');
 //    $('.draggableBoxRel.visible li.ui-draggable-dragging)').addClass('visible');
     $(this).find('.draggableBoxRel').addClass('visible');
-});
-
-/*
- * Filter list of elements in metaattribute or bins box.
- */
-$('.dragDropSearch').keyup(function(){
-    var value = $(this).val();
-    var $list = $(this).siblings('.scrollable');
-    
-    if(value === ''){
-        $('li', $list).show();
-    }
-    else{
-        $('li:not(:contains('+value+'))', $list).hide(); 
-        $('li:contains('+value+')', $list).show();
-    }
-});
-
-/*
- * Resets search input in metaattribute or bins box.
- */
-$('.dragDropSearchReset').click(function(){
-    $(this).siblings('.dragDropSearch').val('').keyup();
 });

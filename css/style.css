@@ -44,7 +44,7 @@ body{ font-family: "Tahoma", "Arial", "sans-serif"; }
 .dragDropBox li{ display: inline-table; margin: 2px; }
 .dragDropBox li span{ }
 .dragDropElmAtt{ color: green; }
-.dragDropBox .dragDropElmRel{ color: red; }
+.dragDropElmRel{ color: red; }
 .dragDropElmBin{ color: blue; }
 .dragDropElmVal{ color: blueviolet; }
 .dragDropBox .dragDropElmLog{ margin: 2px 5px; }
