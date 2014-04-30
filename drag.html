@@ -5,7 +5,7 @@ and open the template in the editor.
 <!DOCTYPE html>
 <html>
     <head>
-        <title></title>
+        <title data-i18n="bre-title">Business rule editor</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         
         <link rel="stylesheet" href="css/style.css" />
@@ -19,10 +19,8 @@ and open the template in the editor.
             <div class="dragDropLeft fl">
                 <form>
                     <fieldset id="Antecedent">
-                        <legend>Condition</legend>
+                        <legend data-i18n="bre-condition">Condition</legend>
                         <ul class="dragDropBox">
-                            <li class="button noSortable dragDropBoxEnd">)</li>
-                            <li class="button noSortable">(</li>
                         </ul>
                     </fieldset>
                     <ul class="draggableBox draggableBoxRel">
@@ -35,10 +33,8 @@ and open the template in the editor.
                 <div class="newRow"></div>
                 <form>
                     <fieldset id="Consequent">
-                        <legend>Execute</legend>
+                        <legend data-i18n="bre-execute">Execute</legend>
                         <ul class="dragDropBox">
-                            <li class="button noSortable dragDropBoxEnd">)</li>
-                            <li class="button noSortable">(</li>
                         </ul>
                     </fieldset>
                     <ul class="draggableBox draggableBoxRel">
@@ -50,16 +46,16 @@ and open the template in the editor.
                 </form>
                 <div class="newRow"></div>
                 <div class="fr">
-                    <button id="newRule">New rule</button>
-                    <button id="validateRule">Save rule</button>
+                    <button id="newRule" data-i18n="bre-button-newRule">New rule</button>
+                    <button id="validateRule" data-i18n="bre-button-saveRule">Save rule</button>
                 </div>
             </div>
             <div class="fr">
                 <form>
                     <fieldset id="attributes">
-                        <legend>Metaattributes</legend>
-                        <input type="text" placeholder="search..." class="draggableSearch" />
-                        <a href="#" title="Reset" class="draggableSearchReset">x</a>
+                        <legend data-i18n="bre-metaattributes">Metaattributes</legend>
+                        <input type="text" placeholder="search..." class="draggableSearch" data-i18n="(placeholder)bre-placeholder-search" />
+                        <a href="#" title="Reset" class="draggableSearchReset" data-i18n="(title)bre-link-searchReset">x</a>
                         <div class="scrollable">
                             <ul class="draggableBox">
                             </ul>
@@ -68,15 +64,15 @@ and open the template in the editor.
                 </form>
                 <form>
                     <fieldset id="values">
-                        <legend>Bins & values</legend>
-                        <input type="text" placeholder="search..." class="draggableSearch" />
-                        <a href="#" title="Reset" class="draggableSearchReset">x</a>
+                        <legend data-i18n="bre-binsAndValues">Bins & values</legend>
+                        <input type="text" placeholder="search..." class="draggableSearch" data-i18n="(placeholder)bre-placeholder-search" />
+                        <a href="#" title="Reset" class="draggableSearchReset" data-i18n="(title)bre-link-searchReset">x</a>
                         <div class="scrollable">
-                            <h4>Bins</h4>
+                            <h4 data-i18n="bre-head-bins">Bins</h4>
                             <ul class="draggableBox draggableBins">
-                                <li class="draggableBoxInfo">To have options click on element in condition or execute box.</li>
+                                <li class="draggableBoxInfo" data-i18n="bre-binsAndValues-defaultText"></li>
                             </ul>
-                            <h4>Values</h4>
+                            <h4 data-i18n="bre-head-values">Values</h4>
                             <ul class="draggableBox draggableVals">
                             </ul>
                         </div>
@@ -85,20 +81,14 @@ and open the template in the editor.
             </div>
             <div id="logDiv" class="newRow"></div>
             <div id="rules" class="newRow">
-                <h2>Rules to edit</h2>
+                <h2 data-i18n="bre-head-rulesEdit">Rules to edit</h2>
                 <ul></ul>
             </div>
-            <ul id="contextMenuUl" style="display: none;">
-                <li><a href="">rating</a></li>
-                <li>duration</li>
-                <li>=</li>
-                <li>is</li>
-                <li>not</li>
-            </ul>
         </div>
         <script src="js/jquery-1.11.0.min.js"></script>
         <script src="js/jquery-ui-1.10.4.custom.min.js"></script>
         <script src="js/jstorage-0.4.8.min.js"></script>
+        <script src="js/jquery.i18n.min.js"></script>
         <script src="js/jquery.json2.js"></script>
         <script src="js/jquery.ui-contextmenu.js"></script>
         <script src="js/jquery.apprise-v2.js"></script>

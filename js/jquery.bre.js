@@ -15,6 +15,25 @@
     });
     
     /** 
+    * Applies i18n on element. Element has to have attribute 'data-i18n'.
+    * If value of this attribute contains something between parentheses, rest
+    * of value will be replaced instead of attribute, which name suits to expression
+    * between parentheses. If not, it will call normal i18n function for content.
+    */
+    $.fn.i18nApply = function() {
+        $(this).each(function(){
+            var attr = $(this).attr('data-i18n'),
+                regExp = /\(([^)]+)\)/,
+                matches = regExp.exec($(this).attr('data-i18n')) || [];
+            if(matches.length < 1){
+                $(this)._t(attr);
+            } else{
+                $(this).attr(matches[1], $.i18n._(attr.replace(matches[0],'')));
+            }
+        });
+    };
+    
+    /** 
     * Converts XML Interval to JSON.
     */
     $.fn.intervalToJson = function() { 
@@ -52,7 +71,7 @@
             } 
             $.jStorage.set("rule-"+actMetaId, xmlString);
             //$('#logDiv').append("rule-"+actMetaId+":"+actMeta+"<br />")
-            $('#rules ul').append('<li><a href="#" title="Upravit pravidlo '+$(this).children('Text').text()+'" rel="'+actMetaId+'" class="linkRuleEdit">'+$(this).children('Text').text()+'</a></li>')
+            $('#rules ul').append('<li><a href="#" title="'+$.i18n._('bre-editRule')+' '+$(this).children('Text').text()+'" rel="'+actMetaId+'" class="linkRuleEdit">'+$(this).children('Text').text()+'</a></li>')
         });
         //$('#logDiv').append("<br />")
     };
@@ -123,16 +142,27 @@
 
 })(jQuery);
 
-var connections = $.parseJSON('{"Conjunction": "and", "Disjunction": "or", "Negation": "not"}');
-var attJson = {};
-var forJson = {};
+/* probably unused 
 var catJson = {};
-var binJson = {};
-var rels = [];
 var relJson = {};
-var actRule;
+var actRule;*/
+
+var attJson = {};
+var connections = $.parseJSON('{"Conjunction": "and", "Disjunction": "or", "Negation": "not"}');
+var config;
+var binJson = {};
+var forJson = {};
+var rels = [];
 
 $.when(
+    $.ajax({
+        url: "js/config.json",
+        dataType: "json",
+        success: function(data) {
+            config = data;
+        }
+    }),
+    
     $.ajax({
         url: "js/operators.json",
         dataType: "json",
@@ -141,11 +171,22 @@ $.when(
 //            alert(thrownError);
 //          },
         success: function(data) {
+            var newRow = false;
             $(data.operators).each(function() {
-                rels.push({label: this.label, category: "Log"});
-//                relJson[this.label] = '{"visible": '
-                if(this.visible){
-                    $('.draggableBoxRel').append($("<li>").html(this.label).attr('rel',this.label).addClass('button dragDropElmRel'))
+                if(this.label === 'break'){
+                    newRow = true;
+                }
+                else{
+                    rels.push({label: this.label, category: "Log"});
+    //                relJson[this.label] = '{"visible": '
+                    if(this.visible){
+                        var $operator = $("<li>").html(this.label).attr('rel',this.label).addClass('button dragDropElmRel');
+                        if(newRow){
+                            $operator.css('clear', 'left');
+                            newRow = false;
+                        }
+                        $('.draggableBoxRel').append($operator)
+                    }
                 }
             })
         }
@@ -167,7 +208,16 @@ $.when(
         }
     })
 ).then(function(){
-    processData();
+    $.ajax({
+        url: "i18n/"+config.locale+".json",
+        dataType: "json",
+        success: function(data) {
+            $.i18n.load(data);
+            $('*[data-i18n]').i18nApply();
+        }
+    }),
+    
+    initApp();
 });
 
 /** 

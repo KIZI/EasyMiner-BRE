@@ -1,0 +1,43 @@
+{
+    "@metadata": {
+        "authors": [
+            "PreVaDu - Přemysl Václav Duben"
+        ],
+        "last-updated": "2014-04-30",
+        "locale": "en",
+        "message-documentation": "qqq"
+    },
+    "bre-title": "Business rule editor",
+    "bre-condition": "Condition",
+    "bre-execute": "Execute",
+    "bre-button-newRule": "New rule",
+    "bre-button-saveRule": "Save rule",
+    "bre-metaattributes": "Metaattributes",
+    "bre-head-bins": "Bins",
+    "bre-head-values": "Values",
+    "bre-binsAndValues": "Bins & values",
+    "bre-binsAndValues-defaultText": "To have options click on element in condition or execute box.",
+    "bre-placeholder-search": "search...",
+    "bre-head-rulesEdit": "Rules to edit",
+    "bre-editRule": "Edit rule",
+    "bre-link-switchTo": "switch to",
+    "bre-link-erase": "erase",
+    "bre-link-searchReset": "reset",
+    "bre-apprise-operatorThan-question": "Which value should %s be %s? (acceptable range: %s )",
+    "bre-apprise-operatorThan-confirm": "OK",
+    "bre-validation-notInRange": "This value is not in possible range of attribute",
+    "bre-validation-attrWithoutInterval": "Metaattribute %s has no option to be used with operator %s!",
+    "bre-validation-noAttrForThan": "There is no metaattribute which value should be %s!",
+    "bre-validation-cannotValToAttr": "Value cannot be with %s attribute",
+    "bre-validation-useBinOrChange": "You have to use bin or change operator",
+    "bre-validation-shouldBin": "It should be bin",
+    "bre-validation-shouldLog": "It should be relation",
+    "bre-validation-shouldOr": "It should be OR",
+    "bre-validation-lostBracketLeft": "Too much closing parenthesis",
+    "bre-validation-lostBracketRight": "Not all parentheses are closed",
+    "bre-validation-lostBracketsDifferentRelations": "Parts of rule have to be inside parentheses if there are different relations",
+    "bre-validation-badOperator": "This operator is not allowed",
+    "bre-validation-badNegation": "Negation has to be before parentheses, which content should be negated",
+    "bre-validation-": "",
+    "bre-footer": ""
+}
