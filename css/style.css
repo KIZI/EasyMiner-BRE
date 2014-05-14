@@ -8,9 +8,30 @@
 .hidden{ display: none; }
 .visible{ visibility: visible !important; }
 
-body{ font-family: "Tahoma", "Arial", "sans-serif"; }
+body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 
 #content{ width: 960px; margin: 0 auto; }
+
+#errorBox{ opacity: 0; }
+
+/* style modifications for jQuery Widget */
+.ui-widget{ margin: .5em 0; }
+.ui-widget p{ margin: .5em 0; overflow: hidden; }
+.ui-widget .ui-corner-all{ padding: 4px; }
+.ui-widget .ui-widget-header{ margin: 0; padding: 2px 5px; font-weight: bold; }
+.ui-widget .ui-widget-content{ overflow: hidden; padding: 2px 5px; }
+.ui-widget .ui-widget-content-active{ border-color: #ACDD4A; }
+.ui-widget fieldset{ border: none; padding: 0; }
+.ui-widget fieldset legend{ display: none; }
+
+.ui-menu{width: 140px; }
+
+/* original style with arrow for jQuery Tooltip */
+.ui-tooltip, .arrow:after{ background: #e14f1c !important; border: 2px solid white !important; }
+.ui-tooltip{ font-weight: bold; font-size: 1.1em; box-shadow: 0 0 7px black; }
+.arrow{ width: 70px; height: 10px; overflow: hidden; position: absolute; left: 50%; margin-left: -25px; bottom: -10px; }
+.arrow:after{ content: ""; position: absolute; left: 20px; top: -18px; width: 20px; height: 20px; box-shadow: 6px 5px 9px -9px black; -webkit-transform: rotate(45deg); -moz-transform: rotate(45deg); -ms-transform: rotate(45deg); -o-transform: rotate(45deg); tranform: rotate(45deg); }
+
 
 .autocompleteBox{ position: relative; width: 800px; list-style-type: none; padding: 0; overflow: hidden; }
 
@@ -37,11 +58,11 @@ body{ font-family: "Tahoma", "Arial", "sans-serif"; }
                  .autocompleteBoxInp div{ float: left; width: 10px; height: 18px; text-align: center; }
 .autocompleteBox .autocompleteBoxEnd{ position: absolute; right: 5px; bottom: 0; }
 
-.dragDropLeft{ width: 700px; overflow: hidden; }
+/* Drag&Drop styles */
+.dragDropLeft{ overflow: hidden; }
 .dragDropLeft form{ overflow: hidden; padding-bottom: 10px; }
-.dragDropLeft fieldset{ width: 640px; float: left; }
-
-.dragDropBox{ position: relative; width: 610px; min-height: 35px; padding: 0 30px 0 0; list-style-type: none; }
+.dragDropLeft fieldset{ }
+.dragDropBox{ position: relative; width: 680px; min-height: 35px; padding: 0 30px 0 0; list-style-type: none; }
 .dragDropBox li{ display: inline-table; margin: 2px; }
 .dragDropBox li span{ }
 .dragDropElmAtt{ color: green; }
@@ -52,7 +73,9 @@ body{ font-family: "Tahoma", "Arial", "sans-serif"; }
 .dragDropBox .dragDropBoxEnd{ position: absolute; right: 5px; bottom: 0; }
 .dragDropBox .noSortable{ background: none; border-color: #fff; }
 .dragDropBox .ui-selected{ background-color: #cacaca; }
+.dragDropBox .button{ cursor: default; }
 
+/* draggable Button styles*/
 .button{ display: block; padding: 5px 10px; border: #cacaca 1px solid; background-color: #F0F0F0;
    -ms-user-select: none; /* IE 10+ */
    -moz-user-select: -moz-none;
@@ -61,16 +84,18 @@ body{ font-family: "Tahoma", "Arial", "sans-serif"; }
    user-select: none; }
 .button.toRemove{ cursor: not-allowed !important; }
 .button.moving{ cursor: move; }
-.draggableBox{ /*width: 190px; */ margin: 0; padding: 0; list-style-type: none; }
-.draggableBox .button{ float: left; cursor: move; /*width: 120px; */}
+
+.draggableBox{ margin: 0; padding: 0; list-style-type: none; }
+.draggableBox .button{ float: left; cursor: move; }
 .draggableBox .draggableBoxInfo{ width: 150px; }
-.fr div.scrollable{ margin-top: 5px; height: 233px; overflow-y: auto; }
+.fr div.scrollable{ margin-top: 5px; height: 235px; overflow-y: auto; }
 .fr div.scrollable h4{ clear: both; margin: 5px 0 2px; }
 .fr .draggableBox .button{ margin: 1px 0; clear: left; }
-.draggablePlace{ display: block; /*width: 100px; */padding: 5px 10px; text-align: center; border: #cacaca 1px dotted; }
-/*.draggableBoxLog{ visibility: hidden; float: right; width: 50px; margin: 10px 0; }*/
+.fr input{ width: 150px; margin-right: 2px; padding: 3px 4px; }
+.draggablePlace{ display: block; padding: 5px 10px; text-align: center; border: #cacaca 1px dotted; }
 .draggableBoxRel{ visibility: hidden; clear: left; }
 .draggableBoxRel .button{ /*float: left; */margin: 5px; overflow: hidden; }
+.draggableSearchReset { float: right; }
 
-.ui-widget{ padding: 5px; list-style-type: none; border: 1px dotted; border-top: none; background-color: #fff; min-width: 140px !important; }
-.ui-icon-carat-1-e{ position: absolute; top: 20px !important; width: 5px; height: 24px; background: url(../images/arrow.gif) right 8px no-repeat; }
+/*.ui-widget{ padding: 5px; list-style-type: none; border: 1px dotted; border-top: none; background-color: #fff; min-width: 140px !important; }
+.ui-icon-carat-1-e{ position: absolute; top: 20px !important; width: 5px; height: 24px; background: url(../images/arrow.gif) right 8px no-repeat; }*/

@@ -22,7 +22,7 @@
                 }
                 else if(cedentConnective == 'Negation'){
                     elmAttrs.push('<li class="button dragDropElmLog" rel="'+
-                            cedentConnective+'">'+connections[cedentConnective]+
+                            cedentConnective+'">'+config.connections[cedentConnective]+
                             '</li>'+bracketLeft+attributes.join('')+bracketRight);
                 }
                 else{
@@ -33,10 +33,17 @@
                 var format = $(this).attr('format');
                 var elmCats = [];
                 var catsCount = parseInt($(this).children('Category').length);
+                if(typeof forJson[format] == 'undefined'){
+                    showError($.i18n._('bre-error-dataInconsistance'), null);
+                }
+                setAttRel(attJson[forJson[format].metid], format);
                 elmCats.push('<li class="button dragDropElmAtt" rel="'+
                         format+'">'+attJson[forJson[format].metid]+'</li>');
                 elmCats.push('<li class="button dragDropElmRel" rel="is">is</li>');
                 $(this).children('Category').each(function(i, e){
+                    if(typeof binJson[format][$(this).attr('id')] == 'undefined'){
+                        showError($.i18n._('bre-error-dataInconsistance'), null);
+                    }
                     var bin = binJson[format][$(this).attr('id')];
                     var binType = Object.getOwnPropertyNames(forJson[format].range);
                     var binTitle = '';
@@ -68,7 +75,7 @@
                 if(typeof connective == 'undefined'){
                     connective = 'Conjunction';
                 }
-                elmAttrs.push('<li class="button dragDropElmLog" rel="'+connective+'">'+connections[connective]+'</li>');
+                elmAttrs.push('<li class="button dragDropElmLog" rel="'+connective+'">'+config.connections[connective]+'</li>');
             }
         });
         return(elmAttrs);
@@ -88,17 +95,54 @@
     * @param {Int} i index of elm in array of jQuery objects
     */
     $.fn.getAttribute = function(i){
+//        alert('called getAttribute');
         var att = forJson[$(this[i]).attr('rel')],
             attType = Object.getOwnPropertyNames(att.range),
-            operatorIsThan = false;
+            operatorIsThan = false,
+            categoryFull = '',
+            categoryFullId = 0;
         if(!$(this[i+1]).hasClass('dragDropElmRel')){
-            showError('očekáván operátor', this[i+1]);
+            showError($.i18n._('bre-validation-shouldOpe'), this[i+1]);
         } else{
             if($(this[i+1]).attr('rel').indexOf('than')>0){
                 operatorIsThan = true;
                 if(attType == "Interval"){
                     if(isValueInInterval(att.range.Interval, $(this[i+2]).text())){
-//                        TO-DO ajax request to save value => new bin
+                        var closure = [];
+                        var margins = [];
+                        closure = $(this[i+1]).getClosure(closure);
+                        margins = $(this[i+1]).getMargins(margins,$(this[i+2]).text());
+                        if($(this[i+3]).attr('rel') === 'Conjunction'){
+                            if($(this[i+4]).attr('rel') === $(this[i]).attr('rel') &&
+                            $(this[i+5]).attr('rel').indexOf('than')>0){
+                                // found second part of Interval on 4th position
+                                closure = $(this[i+5]).getClosure(closure);
+                                margins = $(this[i+5]).getMargins(margins,$(this[i+6]).text());
+                                categoryFullId += 4;
+                                
+                            } else if($(this[i+4]).attr('rel').indexOf('than')>0){
+                                // found second part of Interval on 5th position
+                                closure = $(this[i+4]).getClosure(closure);
+                                margins = $(this[i+4]).getMargins(margins,$(this[i+5]).text());
+                                categoryFullId += 3;
+                            }
+                        }else{
+                            if(typeof closure[0] == 'undefined'){
+                                closure[0] = 'open';
+                            } else if(typeof closure[1] == 'undefined'){
+                                closure[1] = 'Open';
+                            }
+                            if(typeof margins[0] == 'undefined'){
+                                margins[0] = '-INF';
+                            } else if(typeof margins[1] == 'undefined'){
+                                margins[1] = '+INF';
+                            }
+                        }
+                        var categoryName = [closure.join(''),margins[0],margins[1]];
+                        categoryFull = '<Category><Name>'+$(categoryName).printInterval()+
+                                '</Name><Data><Interval closure="'+
+                                closure.join('')+'" leftMargin="'+margins[0]+
+                                '" rightMargin="'+margins[1]+'"/></Data></Category>';
                     } else{
                         showError($.i18n._('bre-validation-notInRange'), this[i+2]);
                     }
@@ -119,13 +163,19 @@
                 if($.inArray($(this[i+2]).text(), att.range.Value) < 0){
                     showError($.i18n._('bre-validation-notInRange'), this[i+2]);
                 } else{
-//                    TO-DO ajax request to save value => new bin
+                    categoryFull = '<Category><Name>'+$(this[i+2]).text()+
+                            '</Name><Data><Value>'+$(this[i+2]).text()+
+                            '</Value></Data></Category>';
                 }
             }
         } else{
             showError($.i18n._('bre-validation-shouldBin'), this[i+2]);
         }
-        var categories = '<Category id="'+$(this[i+2]).attr('rel')+'" />';
+        if(categoryFull != ''){
+            var categories = categoryFull;
+        } else{
+            var categories = '<Category id="'+$(this[i+2]).attr('rel')+'" />';
+        }
         if($(this[i+3]).attr('rel') === 'Disjunction'){
             if($(this[i+4]).attr('rel') === $(this[i]).attr('rel')){
                 categories += $(this).getAttribute(i+4);
@@ -139,38 +189,91 @@
                     categories += '<Category id="'+$(this[i+4]).attr('rel')+'" />';
                     lastId = 4;
                 }
+            } else{
+                lastId = 2;
             }
         } else if($(this[i+3]).attr('rel') === $(this[i]).attr('rel')){
             lastId = 2;
             showError($.i18n._('bre-validation-shouldOr'), this[i+3]);
         } else{
-            lastId = 2;
+            lastId = 2+categoryFullId;
+        }
+        if(categoryFull != ''){ // erase old format datas to enforce redownload
+            forJson[$(this[i]).attr('rel')] = undefined;
         }
         return categories;
     };
+    
+    /**
+     * Gets closure part from operator.
+     * @param {Array} closure array of closure parts
+     */
+    $.fn.getClosure = function(closure){
+        var rel = $(this).attr('rel');
+        if(rel.indexOf('greater than')>=0){
+            closure[0] = (rel.indexOf('or equals')>0) ? 'closed' : 'open';
+        } else{
+            closure[1] = (rel.indexOf('or equals')>0) ? 'Closed' : 'Open';
+        }
+        return closure;
+    }
+    
+    /**
+     * Gets margins of interval.
+     * @param {Array} closure array of closure parts
+     * @param {Integer} val of margin
+     */
+    $.fn.getMargins = function(margins, val){
+        var rel = $(this).attr('rel');
+        if(rel.indexOf('greater than')>=0){
+            margins[0] = val;
+        } else{
+            margins[1] = val;
+        }
+        return margins;
+    }
 
     /**
      * Gets interval to be printable.
-     * @returns {String} Interval in text form
+     * @return {String} Interval in text form
      */
     $.fn.printInterval = function(){
-        var intervals = [];
-        $(this).each(function(){
-            if(this[0] === 'closedClosed'){
-                intervals.push('['+this[1]+' ; '+this[2]+']');
-            } else if(this[0] === 'closedOpen'){
-                intervals.push('['+this[1]+' ; '+this[2]+')');
-            } else if(this[0] === 'openClosed'){
-                intervals.push('('+this[1]+' ; '+this[2]+']');
-            } else if(this[0] === 'openOpen'){
-                intervals.push('('+this[1]+' ; '+this[2]+')');
+//        alert($.isArray(this[0]));
+        if($.isArray(this[0])){
+//            alert(this.length);
+            var intervals = [];
+            $.each(this, function(k, d){
+                intervals.push($(d).printInterval());
+            });
+            return intervals.join(' and ');
+        } else{
+            switch (this[0]){
+                case 'closedClosed':
+                    return('['+this[1]+' ; '+this[2]+']');
+                case 'closedOpen':
+                    return('['+this[1]+' ; '+this[2]+')');
+                case 'openClosed':
+                    return('('+this[1]+' ; '+this[2]+']');
+                case 'openOpen':
+                    return('('+this[1]+' ; '+this[2]+')');
+                default:
+                    break;
             }
-        });
-        return intervals.join(' and ');
+        }
+//        $(this).each(function(){
+//            if(this[0] === 'closedClosed'){
+//            } else if(this[0] === 'closedOpen'){
+//            } else if(this[0] === 'openClosed'){
+//            } else if(this[0] === 'openOpen'){
+//            }
+//        });
+//        return intervals.join(' and ');
     };
 
     /** 
     * Validates cedent rule part to XML. Array of objects are inside brackets.
+    * @param {Int} fromI index of array which should loop counts from
+    * @return {Array} attributes, connective between attributes
     */
     $.fn.validateCedent = function(fromI){
         var attrs = [],
@@ -224,7 +327,7 @@
                 } else if($(this[i-1]).hasClass('dragDropElmBin') || $(this[i-1]).hasClass('dragDropElmVal')){
                     showError($.i18n._('bre-validation-shouldLog'), this[i]);
                 } else{
-                    showError($.i18n._('bre-title'), this[i]);
+                    showError($.i18n._('bre-validation-shouldAtt'), this[i]);
                 }
                 attrs.push(attribute);
             }
@@ -236,9 +339,13 @@
     * Validates rule part to XML.
     */
     $.fn.validateRule = function(){
+        if($(".dragDropBox .button:not(.noSortable)", this).length < 3){
+            var part = ($(this).attr('id') == 'Antecedent') ? $.i18n._('bre-condition') : $.i18n._('bre-execute');
+            showError($.i18n._('bre-validation-empty', part), null);
+        }
         $('.red', this).removeClass('red');
-        var $bracketLeft = $(".dragDropBox .dragDropBracket:contains('(')", this).not('.noSortable');
-        var $bracketRight = $(".dragDropBox .dragDropBracket:contains(')')", this).not('.noSortable');
+        var $bracketLeft = $(".dragDropBox .dragDropBracket:contains('('):not(.noSortable)", this);
+        var $bracketRight = $(".dragDropBox .dragDropBracket:contains(')'):not(.noSortable)", this);
         $($bracketRight).each(function(){
             if($(this).next().text() === '('){
                 showError($.i18n._('bre-validation-shouldLog'), $(this).next());
@@ -297,6 +404,37 @@
 })(jQuery);
 
 /** 
+* Applies config.
+*/
+applyConfig = function(){
+    var newRow = false;
+    $(config.operators).each(function() {
+        if(this.label === 'break'){
+            newRow = true;
+        }
+        else{
+            rels.push({label: this.label, category: "Log"});
+//                relJson[this.label] = '{"visible": '
+            if(this.visible){
+                var $operator = $("<li>").html(this.label).attr('rel',this.label).addClass('button dragDropElmRel');
+                if(newRow){
+                    $operator.css('clear', 'left');
+                    newRow = false;
+                }
+                $('.draggableBoxRel').append($operator)
+            }
+        }
+    })
+    if(config['init-brackets']){
+        $('.dragDropBox').append('<li class="button noSortable dragDropBoxEnd">)</li>\n\
+            <li class="button noSortable">(</li>');
+    }
+    if(config['init-helper']){
+        $('.dragDropBox').append('<li class="draggablePlace initHelper">'+$.i18n._('bre-initHelper')+'</li>');
+    }
+};
+
+/** 
 * Find format which bin from param belong to.
 * @param {String} id of bin
 * @return {String} id of format
@@ -320,76 +458,140 @@ binToFormat = function(id){
 };
 
 /** 
+* Defines rule name from filled boxes.
+* @return {String} rule name
+*/
+defRuleName = function(){
+    var antecedentLi = $('#Antecedent li:not(.noSortable)').map(function(i,n) {
+        return $(n).text();
+    }).get().join(' ');
+    var consequentLi = $('#Consequent li:not(.noSortable)').map(function(i,n) {
+        return $(n).text();
+    }).get().join(' ');
+    return antecedentLi+' &gt;:&lt; '+consequentLi;
+};
+
+/** 
 * Removes all elements from Antecedent and Consequent parts to show new rule instead.
 */
 emptyConExe = function(){
-    $('#Antecedent .button, #Consequent .button').not('.noSortable').remove();
+    $('.initHelper').remove();
+    $('#Antecedent .button:not(.noSortable), #Consequent .button:not(.noSortable)').remove();
 };
 
 /**
- * Checks if value is in interval.
- * @param {json} interval
+ * Checks if value is in interval. Recursive.
+ * @param {Array} interval
  * @param {integer} val
  * @returns {boolean}
  */
 isValueInInterval = function(interval, val){
-    if(interval[0][0] === 'closedClosed'){
-        return (interval[0][1] <= val && val <= interval[0][2]);
-    } else if(interval[0][0] === 'closedOpen'){
-        return (interval[0][1] <= val && val < interval[0][2]);
-    } else if(interval[0][0] === 'openClosed'){
-        return (interval[0][1] < val && val <= interval[0][2]);
-    } else if(interval[0][0] === 'openOpen'){
-        return (interval[0][1] < val && val < interval[0][2]);
-    } else{ return false; }
+    if($.isArray(interval[0])){
+        var result = false;
+        $.each(interval, function(k, d){
+            if(isValueInInterval(d, val)){
+                result = true;
+                return false;
+            }
+        });
+        return result;
+    } else{
+        var int1 = parseInt(interval[1]),
+            int2 = parseInt(interval[2]);
+        switch (interval[0]){
+            case 'closedClosed':
+                return (int1 <= val && val <= int2);
+            case 'closedOpen':
+                return (int1 <= val && val < int2);
+            case 'openClosed':
+                return (int1 = val && val <= int2);
+            case 'openOpen':
+                return (int1 = val && val < int2);
+            default:
+                return false;
+        }
+    }
 };
 
 /** 
-* Initializates application.
 * Processes attributes to insert into the box of attributes.
-* Applies config.
 */
-initApp = function(){
-    $.each(forJson, function(key, data){
-        $('#attributes .draggableBox').append($("<li>").html(attJson[data.metid]).attr('rel',key).addClass('button dragDropElmAtt'))
+printAtt = function(){
+    $.each(attJson, function(key, data){
+        $('#attributes .draggableBox').append($("<li>").html(data).attr('rel',key).addClass('button dragDropElmAtt'));
     });
-    if(config['init-brackets']){
-        $('.dragDropBox').append('<li class="button noSortable dragDropBoxEnd">)</li>\n\
-            <li class="button noSortable">(</li>');
-    }
 };
     
 /** 
 * Insert button elements into the box of values.
-* @param {String} format id of format
+* @param {String} rel id of format
 */
-processValues = function(format){
-    var form = forJson[format],
-        bins = binJson[format],
-        type = Object.getOwnPropertyNames(form.range);
-    $('#values .draggableBox li').remove();
-    $.each(bins, function(key, data){
-        var $li = $("<li>").html(data.name).attr('rel',key).addClass('button dragDropElmBin');
-        if(type == 'Value'){
-            $li.attr('title',data.vals);
-        } else if(type == 'Interval'){
-            $li.attr('title',$(data.vals).printInterval());
-        }
-        $('#values .draggableBins').append($li);
-    });
+processValues = function(rel){
+    // function process() could be called in different cases
+    var process = function(format){
+        var form = forJson[format],
+            bins = binJson[format],
+            type = Object.getOwnPropertyNames(form.range);
+        $('#values .draggableBox li').remove();
+        $.each(bins, function(key, data){
+            var $li = $("<li>").html(data.name).attr('rel',key).addClass('button dragDropElmBin');
+            if(type == 'Value'){
+                $li.attr('title',data.vals);
+            } else if(type == 'Interval'){
+                $li.attr('title',$(data.vals).printInterval());
+            }
+            $('#values .draggableBins').append($li);
+        });
 
-    var $prev = $('#values .draggableVals').prev();
-    $prev.show();
-    if(type == 'Value'){
-        $('#values .draggableVals li:not(.ui-sortable-helper)').remove();
-        $(form.range.Value).each(function(){
-            $('#values .draggableVals').append($("<li>").html(this).attr('rel','').addClass('button dragDropElmVal'))
+        var $prev = $('#values .draggableVals').prev();
+        $prev.show();
+        if(type == 'Value'){
+            $('#values .draggableVals li:not(.ui-sortable-helper)').remove();
+            $(form.range.Value).each(function(){
+                $('#values .draggableVals').append($("<li>").html(this).attr('rel','').addClass('button dragDropElmVal'))
+            });
+        }
+        else{
+            $prev.hide();
+        }
+        $('#values .draggableSearchReset').click();
+    };
+    if(typeof forJson[rel] == 'undefined'){
+        $.ajax({
+            url: api.server+api['metaattribute-by-id']+rel,
+            dataType: "xml",
+            success: function(xml){
+                var formatXml;
+                if($(xml).find('Format').length > 1){
+                    alert("more formats");
+//                    TO-DO dialog to choose using format
+                }
+                else{
+                    formatXml = xml;
+                    $(xml).find('MetaAttribute').xmlToJsonFormat();
+                }
+                var newRel = $(formatXml).find('Format').attr('id');
+                setAttRel($(formatXml).find('MetaAttribute').children('Name').text(),
+                            newRel);
+                process(newRel);
+            }
         });
     }
     else{
-        $prev.hide();
+        process(rel);
     }
-    $('#values .draggableSearchReset').click();
+};
+
+/**
+ * 
+ */
+setAttRel = function(name, format){
+    $('#attributes .draggableBox li').filter(function(){
+        return $(this).text() === name;
+    }).attr('rel', format);
+    $('.dragDropBox li').filter(function(){
+        return $(this).text() === name;
+    }).attr('rel', format);
 };
 
 /**
@@ -401,6 +603,7 @@ processValues = function(format){
  */
 showError = function(text, elm){
     showSmallError(text, elm);
+    $.xhrPool.abortAll();
     throw { name: 'SyntaxError', message: text };
 };
 
@@ -410,10 +613,36 @@ showError = function(text, elm){
  * @param elm {jQuery object} which element error belongs to 
  */
 showSmallError = function(text, elm){
-    if(elm !== null){
-        $(elm).addClass('red');
+    if(elm !== null && typeof elm != 'undefined'){
+        var $elm = $(elm);
+        $elm.addClass('red');
+        $elm.tooltip({
+            items: '.red',
+            content: text,
+      position: {
+        my: "center bottom-5",
+        at: "center top",
+        collision: "fit",
+        using: function( position, feedback ) {
+          $( this ).css( position );
+          $( "<div>" )
+            .addClass( "arrow" )
+            .appendTo( this );
+        }
+      }
+        });
+        $elm.tooltip('open');
+        setTimeout(function() {
+            $elm.removeClass('red').tooltip('destroy');
+        }, 7000);
     }
-    $('#errorBox').text(text);
+    else{
+        $('#errorBox').css('opacity', '1').find('strong').text(text);
+        setTimeout(function() {
+            $('#errorBox').animate({opacity:0}).find('strong').text('');
+        }, 7000);
+    }
+    window.scrollTo(0, 0);
 };
 
 /** 
@@ -430,6 +659,7 @@ triggerAfterInsert = function(){
 $(document).on("mouseover", ".draggableBox li", function(){
 //    alert("ahoj");
     if (!$(this).data("init")) {
+//        alert('init');
         $(this).data("init", true).draggable({
             addClasses: false,
             connectToSortable: ".dragDropBox",
@@ -499,12 +729,14 @@ $(document).keydown(function(e){
             var $next = $('.ui-selected').next();
             $('.ui-selected').remove();
             $($next).addClass('ui-selected');
+            edited = true;
         }
         else if(e.which == 8){
             e.preventDefault();
             var $prev = $('.ui-selected').prev();
             $('.ui-selected').remove();
             $($prev).not('.noSortable').addClass('ui-selected');
+            edited = true;
         }
         else if(e.which == 27){
             $(document).trigger("mouseup");
@@ -542,11 +774,11 @@ $(document).contextmenu({
             finMenu.push({title: $.i18n._('bre-link-switchTo'), children: newVals});
         }
         else if($target.hasClass('dragDropElmAtt')){
-            newVals = $.map(forJson, function(data, key){
-                if(key != actId){
+            newVals = $.map($('#attributes .draggableBox li'), function(data, key){
+                if($(data).attr('rel') != actId){
                     return {
-                        title: attJson[data.metid],
-                        cmd: key
+                        title: $(data).text(),
+                        cmd: $(data).attr('rel')
                     };
                 }
             });
@@ -558,11 +790,13 @@ $(document).contextmenu({
 		},
 		select: function(event, ui){
         $target = $(this).data("startingScrollTop");
+        edited = true;
         if(ui.cmd == 'erase'){
             $target.remove();
         }
         else{
             $target.attr('rel', ui.cmd).text(ui.text);
+            $target.click();
         }
 		}
 }).on('dblclick', '.dragDropBox .button:not(.noSortable)', function (e) {
@@ -588,25 +822,27 @@ $(".dragDropBox").sortable({
         if(removeIntent){ ui.item.remove(); }
     },
     out: function(e, ui){
+        $(ui.item).siblings('.draggablePlace').hide();
         removeIntent = true;
         ui.item.addClass('toRemove');
     },
     over: function(e, ui){
+        $(ui.item).siblings('.draggablePlace').show();
         removeIntent = false;
         ui.item.removeClass('toRemove');
-    },
-    receive: function(e, ui){
     },
     start: function(e, ui){
         ui.item.addClass('moving');
         ui.item.click();
+        $(ui.item).siblings('.initHelper').remove();
         newRel = $('li.ui-draggable-dragging').hasClass('dragDropElmRel');
         $('li.ui-draggable-dragging').addClass('visible');
     },
     stop: function(e, ui){
         ui.item.removeClass('toRemove').removeClass('moving');
+        edited = true;
         var $item = ui.item;
-        if($item.attr('rel').indexOf('than')>0){
+        if($item.hasClass('dragDropElmRel') && $item.attr('rel').indexOf('than')>0){
             var $prev = ui.item.prev();
             while(typeof $prev.attr('rel') != "undefined" && !$prev.hasClass('dragDropElmAtt')){
                 $prev = $prev.prev();
@@ -621,6 +857,7 @@ $(".dragDropBox").sortable({
                                 text: $.i18n._('bre-apprise-operatorThan-confirm'),
                                 className: '',
                                 action: function(e){
+//                                    alert(JSON.stringify(att.range.Interval)+' a bylo zadáno '+e.input)
                                     if(isValueInInterval(att.range.Interval, e.input)){
                                         $item.after('<li class="button dragDropElmVal" rel="'+
                             e.input+'">'+e.input+'</li>')
@@ -653,4 +890,22 @@ $(".dragDropBox").sortable({
 $(".dragDropLeft form").mouseover(function(){
     $('.draggableBoxRel.visible').removeClass('visible');
     $(this).find('.draggableBoxRel').addClass('visible');
+});
+
+$('#newRule').click(function(){
+    if((($(".dragDropBox .button:not(.noSortable)", '#Antecedent').length > 2 &&
+        $(".dragDropBox .button:not(.noSortable)", '#Consequent').length > 2) ||
+        typeof actRule != 'undefined') &&
+        edited){
+        $('#saveRule').click();
+    }
+    else{
+        actRule = undefined;
+        edited = true;
+        emptyConExe();
+    }
+}).button({
+    icons: {
+        primary: 'ui-icon-document'
+    }
 });

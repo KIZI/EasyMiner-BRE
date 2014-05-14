@@ -143,7 +143,7 @@
 							actionHandler = $a.data("actionHandler");
 						ui.cmd = normCommand($a.attr("href"));
 						ui.target = $(this.currentTarget);
-            ui.text = $a.text();
+            ui.text = $a.text(); // added by PVD 19/4/2014 to know text of link
 						// ignore clicks, if they only open a sub-menu
 						if( !isParent || !this.options.ignoreParentSelect){
 							retval = this._trigger.call(this, "select", event, ui);

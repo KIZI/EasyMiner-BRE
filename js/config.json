@@ -1,4 +1,34 @@
 {
     "locale": "en",
-    "init-brackets": true
+    "init-brackets": true,
+    "init-helper": true,
+    "api-connect": {
+        "server": "http://brserver.golemsoftware.cz/www/",
+        "metaattribute-list": "rest/metaattribute-list",
+        "metaattribute-by-id": "rest/metaattribute?id=",
+        "metaattribute-by-format": "rest/metaattribute?format=",
+        "format-detail": "rest/format?id=",
+        "rule-list": "rest/rule-list",
+        "rule-detail": "rest/rule?id=",
+        "rule-save": "rest/rule-save",
+        "reset": "homepage/reset"
+        
+    },
+    "operators": [
+        {"visible": true, "label": "is", "opt": ["=", ""]},
+        {"visible": true, "label": "not", "opt": ["¬", "!"]},
+        {"visible": true, "label": "break"},
+        {"visible": true, "label": "lower than", "opt": [">", ""]},
+        {"visible": true, "label": "greater than", "opt": ["<", ""]},
+        {"visible": true, "label": "lower than or equals", "opt": [">=", ""]},
+        {"visible": true, "label": "greater than or equals", "opt": ["<=", ""]},
+        {"visible": false, "label": "and", "opt": ["∧", "&&"]},
+        {"visible": false, "label": "or", "opt": ["∨", "||"]},
+        {"visible": false, "label": "is lower than", "opt": [">", ""]},
+        {"visible": false, "label": "is greater than", "opt": ["<", ""]},
+        {"visible": false, "label": "is not", "opt": ["≠", "!="]},
+        {"visible": false, "label": "is lower than or equals", "opt": ["<=", ""]},
+        {"visible": false, "label": "is greater than or equals", "opt": [">=", ""]}
+    ],
+    "connections": {"Conjunction": "and", "Disjunction": "or", "Negation": "not"}
 }
