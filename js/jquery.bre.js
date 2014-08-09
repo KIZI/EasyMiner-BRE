@@ -157,9 +157,12 @@
 //                            Bins.push('{"id": "'+$(this).attr('id')+'", "name": "'+
 //                                    $(this).children('Name').text()+'", "vals": ['+
 //                                    $(this).children('Interval').intervalToJson()+']}');
+                            var vals = $(this).children('Interval').intervalToJson();
+//                            alert($(this).children('Interval').attr("rightMargin"));
+                            var title = $($.parseJSON('['+vals+']')).printInterval();
                             binJson[forId][$(this).attr('id')] = $.parseJSON('{"name": "in '+
-                                    $(this).children('Name').text()+'", "vals": ['+
-                                    $(this).children('Interval').intervalToJson()+']}');
+                                    $(this).children('Name').text()+'", "title": "'+
+                                    title+'", "vals": ['+vals+']}');
                         });
                     }
                     else if(discretizationType=="NominalEnumeration"){
@@ -167,9 +170,10 @@
 //                            Bins.push('{"id": "'+$(this).attr('id')+'", "name": "'+
 //                                    $(this).children('Name').text()+'", "vals": ['+
 //                                    $(this).children('Value').valuesToJson()+']}');
+                            var vals = $(this).children('Value').valuesToJson();
                             binJson[forId][$(this).attr('id')] = $.parseJSON('{"name": "'+
-                                    $(this).children('Name').text()+'", "vals": ['+
-                                    $(this).children('Value').valuesToJson()+']}');
+                                    $(this).children('Name').text()+'", "title": ['+
+                                    vals+'], "vals": ['+vals+']}');
                         });
                     }
                     Discrets.push('{"'+$(this).attr('id')+'": [{"name": "'+
@@ -260,6 +264,7 @@ var actRule,        // actual Rule, which is edited
     config,         // JSON of config
     edited = false, // boolean if the rule was changed or not
     forJson = {},   // JSON of formats
+    changedFormats = [],    // array of changed Formats
     rels = [];      // relations - used mainly in Autocomplete version
 
 $.when(
@@ -419,8 +424,24 @@ $('#saveRule').click(function(){
         data: { id: actRule, data: ruleXml },
         dataType: "xml",
         success: function(response){
+            if(changedFormats.length > 0){
+                $(changedFormats).each(function(){
+                    forJson[this] = undefined;
+                    binJson[this] = undefined;
+                    $.ajax({
+                        url: api.server+api['format-detail']+this,
+                        dataType: "xml",
+                        async: false,
+                        success: function(xml){
+                            $(xml).find('MetaAttribute').xmlToJsonFormat();
+                        }
+                    });
+                });
+                changedFormats = [];
+                $.jStorage.deleteKey("rule-"+actRule);
+            }
             emptyConExe();
-            showSmallError($.i18n._('bre-rule-saved'));
+            showSuccess($.i18n._('bre-rule-saved'));
             getRules();
         },
         error: function (xhr, ajaxOptions, thrownError) {

@@ -45,14 +45,7 @@
                         showError($.i18n._('bre-error-dataInconsistance'), null);
                     }
                     var bin = binJson[format][$(this).attr('id')];
-                    var binType = Object.getOwnPropertyNames(forJson[format].range);
-                    var binTitle = '';
-                    if(binType == 'Value'){
-                        binTitle = ' title="'+bin.vals+'"';
-                    } else if(binType == 'Interval'){
-                        binTitle = ' title="'+$(bin.vals).printInterval()+'"';
-                    }
-                    elmCats.push('<li class="button dragDropElmBin"'+binTitle+' rel="'+
+                    elmCats.push('<li class="button dragDropElmBin" title="'+bin.title+'" rel="'+
                             $(this).attr('id')+'">'+bin.name+'</li>');
                     if(i<(catsCount-1)){
                         elmCats.push('<li class="button dragDropElmLog" rel="Disjunction">or</li>');
@@ -96,8 +89,10 @@
     */
     $.fn.getAttribute = function(i){
 //        alert('called getAttribute');
-        var att = forJson[$(this[i]).attr('rel')],
+        var forRel = $(this[i]).attr('rel'),
+            att = forJson[forRel],
             attType = Object.getOwnPropertyNames(att.range),
+            binRel = $(this[i+2]).attr('rel'),
             operatorIsThan = false,
             categoryFull = '',
             categoryFullId = 0;
@@ -113,15 +108,15 @@
                         closure = $(this[i+1]).getClosure(closure);
                         margins = $(this[i+1]).getMargins(margins,$(this[i+2]).text());
                         if($(this[i+3]).attr('rel') === 'Conjunction'){
-                            if($(this[i+4]).attr('rel') === $(this[i]).attr('rel') &&
+                            if($(this[i+4]).attr('rel') === forRel &&
                             $(this[i+5]).attr('rel').indexOf('than')>0){
-                                // found second part of Interval on 4th position
+                                // found second part of Interval on 5th position
                                 closure = $(this[i+5]).getClosure(closure);
                                 margins = $(this[i+5]).getMargins(margins,$(this[i+6]).text());
                                 categoryFullId += 4;
                                 
                             } else if($(this[i+4]).attr('rel').indexOf('than')>0){
-                                // found second part of Interval on 5th position
+                                // found second part of Interval on 4th position
                                 closure = $(this[i+4]).getClosure(closure);
                                 margins = $(this[i+4]).getMargins(margins,$(this[i+5]).text());
                                 categoryFullId += 3;
@@ -138,11 +133,18 @@
                                 margins[1] = '+INF';
                             }
                         }
-                        var categoryName = [closure.join(''),margins[0],margins[1]];
-                        categoryFull = '<Category><Name>'+$(categoryName).printInterval()+
+                        var categoryName = $([closure.join(''),margins[0],margins[1]]).printInterval();
+                        var isBin = existBin(forRel, categoryName);
+                        if(typeof isBin == 'undefined'){
+                            categoryFull = '<Category><Name>'+categoryName+
                                 '</Name><Data><Interval closure="'+
                                 closure.join('')+'" leftMargin="'+margins[0]+
                                 '" rightMargin="'+margins[1]+'"/></Data></Category>';
+                            changedFormats.push(forRel);
+                        }
+                        else{
+                            binRel = isBin;
+                        }
                     } else{
                         showError($.i18n._('bre-validation-notInRange'), this[i+2]);
                     }
@@ -152,8 +154,8 @@
             }
         }
         if($(this[i+2]).hasClass('dragDropElmBin')){
-            var binFormat = binToFormat($(this[i+2]).attr('rel'));
-            if(binFormat !== $(this[i]).attr('rel')){
+            var binFormat = binToFormat(binRel);
+            if(binFormat !== forRel){
                 showError($.i18n._('bre-validation-cannotValToAttr', $(this[i]).text()), this[i+2]);
             }
         } else if($(this[i+2]).hasClass('dragDropElmVal')){
@@ -174,15 +176,15 @@
         if(categoryFull != ''){
             var categories = categoryFull;
         } else{
-            var categories = '<Category id="'+$(this[i+2]).attr('rel')+'" />';
+            var categories = '<Category id="'+binRel+'" />';
         }
         if($(this[i+3]).attr('rel') === 'Disjunction'){
-            if($(this[i+4]).attr('rel') === $(this[i]).attr('rel')){
+            if($(this[i+4]).attr('rel') === forRel){
                 categories += $(this).getAttribute(i+4);
                 lastId += 4;
             } else if($(this[i+4]).hasClass('dragDropElmBin')){
                 var binFormat = binToFormat($(this[i+4]).attr('rel'));
-                if(binFormat !== $(this[i]).attr('rel')){
+                if(binFormat !== forRel){
                     showError($.i18n._('bre-validation-cannotValToAttr', $(this[i]).text()), this[i+4]);
                 }
                 else{
@@ -192,14 +194,11 @@
             } else{
                 lastId = 2;
             }
-        } else if($(this[i+3]).attr('rel') === $(this[i]).attr('rel')){
+        } else if($(this[i+3]).attr('rel') === forRel){
             lastId = 2;
             showError($.i18n._('bre-validation-shouldOr'), this[i+3]);
         } else{
             lastId = 2+categoryFullId;
-        }
-        if(categoryFull != ''){ // erase old format datas to enforce redownload
-            forJson[$(this[i]).attr('rel')] = undefined;
         }
         return categories;
     };
@@ -260,14 +259,6 @@
                     break;
             }
         }
-//        $(this).each(function(){
-//            if(this[0] === 'closedClosed'){
-//            } else if(this[0] === 'closedOpen'){
-//            } else if(this[0] === 'openClosed'){
-//            } else if(this[0] === 'openOpen'){
-//            }
-//        });
-//        return intervals.join(' and ');
     };
 
     /** 
@@ -479,6 +470,24 @@ emptyConExe = function(){
     $('#Antecedent .button:not(.noSortable), #Consequent .button:not(.noSortable)').remove();
 };
 
+/** 
+* Checks if already exist bin for format.
+* @param {String} format id of format
+* @param {String} title of bin
+* @return {Boolean} if exists
+*/
+existBin = function(format, title){
+    var result;
+    $.each(binJson[format], function(keyBin, data){
+        if(data.title === title){
+            result = keyBin;
+            return false;
+        }
+    });
+//        alert(result);
+    return result;
+};
+
 /**
  * Checks if value is in interval. Recursive.
  * @param {Array} interval
@@ -642,6 +651,18 @@ showSmallError = function(text, elm){
             $('#errorBox').animate({opacity:0}).find('strong').text('');
         }, 7000);
     }
+    window.scrollTo(0, 0);
+};
+
+/**
+ * Shows success message.
+ * @param {String} text of message
+ */
+showSuccess = function(text){
+    $('#successBox').css('opacity', '1').find('strong').text(text);
+    setTimeout(function() {
+        $('#successBox').animate({opacity:0}).find('strong').text('');
+    }, 7000);
     window.scrollTo(0, 0);
 };
 

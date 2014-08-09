@@ -12,7 +12,8 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 
 #content{ width: 960px; margin: 0 auto; }
 
-#errorBox{ opacity: 0; }
+#errorBox,
+#successBox{ opacity: 0; }
 
 /* style modifications for jQuery Widget */
 .ui-widget{ margin: .5em 0; }
@@ -21,6 +22,7 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 .ui-widget .ui-widget-header{ margin: 0; padding: 2px 5px; font-weight: bold; }
 .ui-widget .ui-widget-content{ overflow: hidden; padding: 2px 5px; }
 .ui-widget .ui-widget-content-active{ border-color: #ACDD4A; }
+.ui-widget .ui-state-success{ border:1px solid #5CB85C; background-color: #DFF0D8; color:#5CB85C; }
 .ui-widget fieldset{ border: none; padding: 0; }
 .ui-widget fieldset legend{ display: none; }
 
