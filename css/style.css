@@ -12,19 +12,23 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 
 #content{ width: 960px; margin: 0 auto; }
 
-#errorBox,
-#successBox{ opacity: 0; }
+#alertBox{ opacity: 0; }
 
 /* style modifications for jQuery Widget */
 .ui-widget{ margin: .5em 0; }
 .ui-widget p{ margin: .5em 0; overflow: hidden; }
 .ui-widget .ui-corner-all{ padding: 4px; }
+.ui-widget.error .ui-corner-all{ border:1px solid #c20000;background:#cd0a0a url("images/ui-bg_highlight-hard_45_cd0a0a_1x100.png") 50% top repeat-x;color:#fff; }
+.ui-widget.error .ui-icon{ background-image: url("images/ui-icons_fff_256x240.png"); background-position:0 -144px; }
+.ui-widget.success .ui-corner-all{ border: 1px solid #5CB85C; background-color: #DFF0D8; color: #5CB85C; }
+.ui-widget.success .ui-icon{ background-image: url("images/ui-icons_5CB85C_256x240.png"); background-position:-64px -144px }
 .ui-widget .ui-widget-header{ margin: 0; padding: 2px 5px; font-weight: bold; }
 .ui-widget .ui-widget-content{ overflow: hidden; padding: 2px 5px; }
 .ui-widget .ui-widget-content-active{ border-color: #ACDD4A; }
-.ui-widget .ui-state-success{ border:1px solid #5CB85C; background-color: #DFF0D8; color:#5CB85C; }
 .ui-widget fieldset{ border: none; padding: 0; }
 .ui-widget fieldset legend{ display: none; }
+
+
 
 .ui-menu{width: 140px; }
 
@@ -87,6 +91,11 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 .button.toRemove{ cursor: not-allowed !important; }
 .button.moving{ cursor: move; }
 
+/*#confidence,#support{ width: 50px; margin-right: 40px; }*/
+.ui-spinner{ width: 80px; margin-right: 20px; }
+.ui-spinner input{ width: 50px; }
+label{ font-size: 1.1em; }
+
 .draggableBox{ margin: 0; padding: 0; list-style-type: none; }
 .draggableBox .button{ float: left; cursor: move; }
 .draggableBox .draggableBoxInfo{ width: 150px; }
@@ -97,7 +106,11 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 .draggablePlace{ display: block; padding: 5px 10px; text-align: center; border: #cacaca 1px dotted; }
 .draggableBoxRel{ visibility: hidden; clear: left; }
 .draggableBoxRel .button{ /*float: left; */margin: 5px; overflow: hidden; }
-.draggableSearchReset { float: right; }
+.draggableSearchReset{ float: right; }
+
+#rules li{ line-height: 26px; }
+#rules li:hover{ background-color: #fafafa; }
+.ruleDelete{ float: right; border-radius: 4px; }
 
 /*.ui-widget{ padding: 5px; list-style-type: none; border: 1px dotted; border-top: none; background-color: #fff; min-width: 140px !important; }
 .ui-icon-carat-1-e{ position: absolute; top: 20px !important; width: 5px; height: 24px; background: url(../images/arrow.gif) right 8px no-repeat; }*/

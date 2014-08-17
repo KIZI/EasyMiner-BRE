@@ -29,18 +29,17 @@
                     elmAttrs.push(attributes.join(''));
                 }
             }
-            else if($(this)[0].nodeName == 'Attribute'){
-                var format = $(this).attr('format');
+            else if($(this)[0].nodeName == 'RuleAttribute'){
+                var format = $(this).attr('attribute');
                 var elmCats = [];
-                var catsCount = parseInt($(this).children('Category').length);
+                var catsCount = parseInt($(this).children('ValuesBin').length);
                 if(typeof forJson[format] == 'undefined'){
                     showError($.i18n._('bre-error-dataInconsistance'), null);
                 }
-                setAttRel(attJson[forJson[format].metid], format);
                 elmCats.push('<li class="button dragDropElmAtt" rel="'+
-                        format+'">'+attJson[forJson[format].metid]+'</li>');
+                        format+'">'+forJson[format].name+'</li>');
                 elmCats.push('<li class="button dragDropElmRel" rel="is">is</li>');
-                $(this).children('Category').each(function(i, e){
+                $(this).children('ValuesBin').each(function(i, e){
                     if(typeof binJson[format][$(this).attr('id')] == 'undefined'){
                         showError($.i18n._('bre-error-dataInconsistance'), null);
                     }
@@ -136,10 +135,10 @@
                         var categoryName = $([closure.join(''),margins[0],margins[1]]).printInterval();
                         var isBin = existBin(forRel, categoryName);
                         if(typeof isBin == 'undefined'){
-                            categoryFull = '<Category><Name>'+categoryName+
-                                '</Name><Data><Interval closure="'+
+                            categoryFull = '<ValuesBin><Name>'+categoryName+
+                                '</Name><Interval closure="'+
                                 closure.join('')+'" leftMargin="'+margins[0]+
-                                '" rightMargin="'+margins[1]+'"/></Data></Category>';
+                                '" rightMargin="'+margins[1]+'"/></ValuesBin>';
                             changedFormats.push(forRel);
                         }
                         else{
@@ -165,9 +164,16 @@
                 if($.inArray($(this[i+2]).text(), att.range.Value) < 0){
                     showError($.i18n._('bre-validation-notInRange'), this[i+2]);
                 } else{
-                    categoryFull = '<Category><Name>'+$(this[i+2]).text()+
-                            '</Name><Data><Value>'+$(this[i+2]).text()+
-                            '</Value></Data></Category>';
+                    var isBin = existBin(forRel, $(this[i+2]).text());
+                    if(typeof isBin == 'undefined'){
+                        categoryFull = '<ValuesBin><Name>'+$(this[i+2]).text()+
+                                '</Name><Value>'+$(this[i+2]).text()+
+                                '</Value></ValuesBin>';
+                        changedFormats.push(forRel);
+                    }
+                    else{
+                        binRel = isBin;
+                    }
                 }
             }
         } else{
@@ -176,7 +182,7 @@
         if(categoryFull != ''){
             var categories = categoryFull;
         } else{
-            var categories = '<Category id="'+binRel+'" />';
+            var categories = '<ValuesBin id="'+binRel+'" />';
         }
         if($(this[i+3]).attr('rel') === 'Disjunction'){
             if($(this[i+4]).attr('rel') === forRel){
@@ -188,7 +194,7 @@
                     showError($.i18n._('bre-validation-cannotValToAttr', $(this[i]).text()), this[i+4]);
                 }
                 else{
-                    categories += '<Category id="'+$(this[i+4]).attr('rel')+'" />';
+                    categories += '<ValuesBin id="'+$(this[i+4]).attr('rel')+'" />';
                     lastId = 4;
                 }
             } else{
@@ -312,8 +318,8 @@
             } else{
                 if($(this[i]).hasClass('dragDropElmAtt')){
                     lastId = 0;
-                    var attribute = '<Attribute format="'+thisRel+'">'+
-                            $(this).getAttribute(i)+'</Attribute>';
+                    var attribute = '<RuleAttribute attribute="'+thisRel+'">'+
+                            $(this).getAttribute(i)+'</RuleAttribute>';
                     i += lastId;
                 } else if($(this[i-1]).hasClass('dragDropElmBin') || $(this[i-1]).hasClass('dragDropElmVal')){
                     showError($.i18n._('bre-validation-shouldLog'), this[i]);
@@ -464,10 +470,12 @@ defRuleName = function(){
 
 /** 
 * Removes all elements from Antecedent and Consequent parts to show new rule instead.
+* Set actual rule variable to undefined.
 */
 emptyConExe = function(){
     $('.initHelper').remove();
     $('#Antecedent .button:not(.noSortable), #Consequent .button:not(.noSortable)').remove();
+    actRule = undefined;
 };
 
 /** 
@@ -479,20 +487,70 @@ emptyConExe = function(){
 existBin = function(format, title){
     var result;
     $.each(binJson[format], function(keyBin, data){
-        if(data.title === title){
+        if(data.title == title){
             result = keyBin;
             return false;
         }
     });
-//        alert(result);
     return result;
 };
 
 /**
+ * Shows dialog to type value, which has to be inside
+ * possible range of last metaattribute before relation.
+ * @param {jQuery object} $item, which could be relation "... than"
+ */
+insertOperatorThan = function($item){
+    if($item.hasClass('dragDropElmRel') && $item.attr('rel').indexOf('than')>0){
+        var $prev = $item.prev();
+        while(typeof $prev.attr('rel') != "undefined" && !$prev.hasClass('dragDropElmAtt')){
+            $prev = $prev.prev();
+        }
+        if($prev.hasClass('dragDropElmAtt')){
+            var att = forJson[$prev.attr('rel')];
+            if(Object.getOwnPropertyNames(att.range) == "Interval"){
+                Apprise($.i18n._('bre-apprise-operatorThan-question', $prev.text(), $item.attr('rel'), $(att.range.Interval).printInterval()), {
+                    animation: 10,
+                    buttons: {
+                        confirm: {
+                            text: $.i18n._('bre-apprise-operatorThan-confirm'),
+                            className: '',
+                            action: function(e){
+//                                    alert(JSON.stringify(att.range.Interval)+' a bylo zadáno '+e.input)
+                                if(isValueInInterval(att.range.Interval, e.input)){
+                                    $item.after('<li class="button dragDropElmVal" rel="'+
+                        e.input+'">'+e.input+'</li>');
+                                    $item.next().click();
+                                }
+                                else{
+                                    $item.remove();
+                                    showSmallError($.i18n._('bre-validation-notInRange'), null);
+                                }
+                                Apprise('close');
+                            }
+                        }
+                    },
+                    input: true,
+                    opacity: '0.80'
+                });
+            }
+            else{
+                $item.remove();
+                showSmallError($.i18n._('bre-validation-attrWithoutInterval', $prev.text(), $item.attr('rel')), null);
+            }
+        }
+        else{
+            $item.remove();
+            showSmallError($.i18n._('bre-validation-noAttrForThan', $item.attr('rel')), null);
+        }
+    }
+}
+
+/**
  * Checks if value is in interval. Recursive.
- * @param {Array} interval
- * @param {integer} val
- * @returns {boolean}
+ * @param {Array} interval to be checked
+ * @param {Integer} val which should be inside interval
+ * @returns {String} Boolean or interval as a string
  */
 isValueInInterval = function(interval, val){
     if($.isArray(interval[0])){
@@ -567,21 +625,11 @@ processValues = function(rel){
     };
     if(typeof forJson[rel] == 'undefined'){
         $.ajax({
-            url: api.server+api['metaattribute-by-id']+rel,
+            url: api.server+strSymReplace(api['attribute-get'], rel, $_GET.baseId),
             dataType: "xml",
             success: function(xml){
-                var formatXml;
-                if($(xml).find('Format').length > 1){
-                    alert("more formats");
-//                    TO-DO dialog to choose using format
-                }
-                else{
-                    formatXml = xml;
-                    $(xml).find('MetaAttribute').xmlToJsonFormat();
-                }
-                var newRel = $(formatXml).find('Format').attr('id');
-                setAttRel($(formatXml).find('MetaAttribute').children('Name').text(),
-                            newRel);
+                $(xml).find('Attribute').xmlToJsonFormat();
+                var newRel = $(xml).find('Attribute').attr('id');
                 process(newRel);
             }
         });
@@ -589,18 +637,6 @@ processValues = function(rel){
     else{
         process(rel);
     }
-};
-
-/**
- * 
- */
-setAttRel = function(name, format){
-    $('#attributes .draggableBox li').filter(function(){
-        return $(this).text() === name;
-    }).attr('rel', format);
-    $('.dragDropBox li').filter(function(){
-        return $(this).text() === name;
-    }).attr('rel', format);
 };
 
 /**
@@ -646,22 +682,21 @@ showSmallError = function(text, elm){
         }, 7000);
     }
     else{
-        $('#errorBox').css('opacity', '1').find('strong').text(text);
-        setTimeout(function() {
-            $('#errorBox').animate({opacity:0}).find('strong').text('');
-        }, 7000);
+        showAlert(text, 'error');
     }
     window.scrollTo(0, 0);
 };
 
 /**
- * Shows success message.
+ * Shows alert message.
  * @param {String} text of message
+ * @param {String} type of message
  */
-showSuccess = function(text){
-    $('#successBox').css('opacity', '1').find('strong').text(text);
+showAlert = function(text, type){
+    var otherType = (type == 'success') ? 'error' : 'success';
+    $('#alertBox').removeClass(otherType).addClass(type).css('opacity', '1').find('strong').text(text);
     setTimeout(function() {
-        $('#successBox').animate({opacity:0}).find('strong').text('');
+        $('#alertBox').animate({opacity:0});
     }, 7000);
     window.scrollTo(0, 0);
 };
@@ -678,7 +713,6 @@ triggerAfterInsert = function(){
  * and if not, they become draggable.
  */
 $(document).on("mouseover", ".draggableBox li", function(){
-//    alert("ahoj");
     if (!$(this).data("init")) {
 //        alert('init');
         $(this).data("init", true).draggable({
@@ -820,8 +854,22 @@ $(document).contextmenu({
             $target.click();
         }
 		}
-}).on('dblclick', '.dragDropBox .button:not(.noSortable)', function (e) {
+}).on('dblclick', '.dragDropBox .button:not(.noSortable)', function(e){
     $(document).contextmenu("open", $(this))
+}).on('dblclick', '.draggableBox .button', function(e){
+    var $newElm = $(this).clone()
+    if($('.ui-selected').length > 0){
+        var $selected = $('.ui-selected');
+        $selected.after($newElm);
+        var $nextElm = $selected.next();
+        $nextElm.click();
+        insertOperatorThan($nextElm);
+    }
+    else{
+        $('.initHelper').remove();
+        $('.draggableBox.visible').siblings('.ui-widget-content')
+                .find('.dragDropBox').append($newElm).children().last().click();
+    }
 });
 
 $(".dragDropBox").sortable({
@@ -862,71 +910,12 @@ $(".dragDropBox").sortable({
     stop: function(e, ui){
         ui.item.removeClass('toRemove').removeClass('moving');
         edited = true;
-        var $item = ui.item;
-        if($item.hasClass('dragDropElmRel') && $item.attr('rel').indexOf('than')>0){
-            var $prev = ui.item.prev();
-            while(typeof $prev.attr('rel') != "undefined" && !$prev.hasClass('dragDropElmAtt')){
-                $prev = $prev.prev();
-            }
-            if($prev.hasClass('dragDropElmAtt')){
-                var att = forJson[$prev.attr('rel')];
-                if(Object.getOwnPropertyNames(att.range) == "Interval"){
-                    Apprise($.i18n._('bre-apprise-operatorThan-question', $prev.text(), $item.attr('rel'), $(att.range.Interval).printInterval()), {
-                        animation: 10,
-                        buttons: {
-                            confirm: {
-                                text: $.i18n._('bre-apprise-operatorThan-confirm'),
-                                className: '',
-                                action: function(e){
-//                                    alert(JSON.stringify(att.range.Interval)+' a bylo zadáno '+e.input)
-                                    if(isValueInInterval(att.range.Interval, e.input)){
-                                        $item.after('<li class="button dragDropElmVal" rel="'+
-                            e.input+'">'+e.input+'</li>')
-                                    }
-                                    else{
-                                        $item.remove();
-                                        showSmallError($.i18n._('bre-validation-notInRange'), null);
-                                    }
-                                    Apprise('close');
-                                }
-                            }
-                        },
-                        input: true,
-                        opacity: '0.80'
-                    });
-                }
-                else{
-                    $(ui.item).remove();
-                    showSmallError($.i18n._('bre-validation-attrWithoutInterval', $prev.text(), $item.attr('rel')), null);
-                }
-            }
-            else{
-                $(ui.item).remove();
-                showSmallError($.i18n._('bre-validation-noAttrForThan', $item.attr('rel')), null);
-            }
-        }
+        var $item = $(ui.item);
+        insertOperatorThan($item);
     }
 });
 
 $(".dragDropLeft form").mouseover(function(){
     $('.draggableBoxRel.visible').removeClass('visible');
     $(this).find('.draggableBoxRel').addClass('visible');
-});
-
-$('#newRule').click(function(){
-    if((($(".dragDropBox .button:not(.noSortable)", '#Antecedent').length > 2 &&
-        $(".dragDropBox .button:not(.noSortable)", '#Consequent').length > 2) ||
-        typeof actRule != 'undefined') &&
-        edited){
-        $('#saveRule').click();
-    }
-    else{
-        actRule = undefined;
-        edited = true;
-        emptyConExe();
-    }
-}).button({
-    icons: {
-        primary: 'ui-icon-document'
-    }
 });

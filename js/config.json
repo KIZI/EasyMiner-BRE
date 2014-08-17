@@ -3,14 +3,13 @@
     "init-brackets": true,
     "init-helper": true,
     "api-connect": {
-        "server": "http://brserver.golemsoftware.cz/www/",
-        "metaattribute-list": "rest/metaattribute-list",
-        "metaattribute-by-id": "rest/metaattribute?id=",
-        "metaattribute-by-format": "rest/metaattribute?format=",
-        "format-detail": "rest/format?id=",
-        "rule-list": "rest/rule-list",
-        "rule-detail": "rest/rule?id=",
-        "rule-save": "rest/rule-save",
+        "server": "http://brserver.golemsoftware.cz/www",
+        "attribute-list": "/attribute/list?baseId=%s",
+        "attribute-get": "/attribute/get?uri=%s&baseId=%s",
+        "rule-list": "/rule-set/get?uri=%s&baseId=%s",
+        "rule-get": "/rule/get?uri=%s&ruleset=%s&baseId=%s",
+        "rule-save": "/rule/save?uri=%s&ruleset=%s&baseId=%s",
+        "rule-delete": "/rule/delete?uri=%s&ruleset=%s&baseId=%s",
         "reset": "homepage/reset"
         
     },
@@ -30,5 +29,6 @@
         {"visible": false, "label": "is lower than or equals", "opt": ["<=", ""]},
         {"visible": false, "label": "is greater than or equals", "opt": [">=", ""]}
     ],
-    "connections": {"Conjunction": "and", "Disjunction": "or", "Negation": "not"}
+    "connections": {"Conjunction": "and", "Disjunction": "or", "Negation": "not"},
+    "rule-ns": "http://keg.vse.cz/easyminer/KBRules"
 }

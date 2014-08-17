@@ -81,33 +81,12 @@
     };
     
     /** 
-    * Saves XML of rules to localStorage as String using jStorage plugin.
-    * No more used, only for local files.
-    */
-//    $.fn.xmlToJsonRules = function() {  
-//        $(this).find('AssociationRule').each(function(){
-//            var actMetaId = $(this).attr('id');
-//            if (window.ActiveXObject){ 
-//                var xmlString = this; 
-//            }
-//            else {
-//                var oSerializer = new XMLSerializer(); 
-//                var xmlString = oSerializer.serializeToString(this);
-//            } 
-//            $.jStorage.set("rule-"+actMetaId, xmlString);
-//            //$('#logDiv').append("rule-"+actMetaId+":"+actMeta+"<br />")
-//            $('#rules ul').append('<li><a href="#" title="'+$.i18n._('bre-editRule')+' '+$(this).children('Text').text()+'" rel="'+actMetaId+'" class="linkRuleEdit">'+$(this).children('Text').text()+'</a></li>')
-//        });
-//        //$('#logDiv').append("<br />")
-//    };
-    
-    /** 
     * Prints rule list to UI.
     */
     $.fn.printRuleList = function() {
         $('#rules ul').empty();
-        $(this).find('AssociationRule').each(function(){
-            $('#rules ul').append('<li><a href="#" title="'+$.i18n._('bre-editRule')+' '+$(this).children('Text').text()+'" rel="'+$(this).attr('id')+'" class="linkRuleEdit">'+$(this).children('Text').text()+'</a></li>');
+        $(this).find('Rule').each(function(){
+            $('#rules ul').append('<li><a href="#" title="'+$.i18n._('bre-editRule')+' '+$(this).children('Text').text()+'" rel="'+$(this).attr('id')+'" class="linkRuleEdit">'+$(this).children('Text').text()+'</a><a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" class="ui-state-error ruleDelete"><span class="ui-icon ui-icon-cancel"/></li>');
         });
     };
     
@@ -117,12 +96,13 @@
     */
     $.fn.storageRule = function(ruleId) {
         var rule = $(this);
+        var xmlString;
         if (window.ActiveXObject){ 
-            var xmlString = rule[0]; 
+            xmlString = rule[0]; 
         }
         else {
             var oSerializer = new XMLSerializer(); 
-            var xmlString = oSerializer.serializeToString(rule[0]);
+            xmlString = oSerializer.serializeToString(rule[0]);
         } 
         $.jStorage.set("rule-"+ruleId, xmlString);
     };
@@ -132,130 +112,40 @@
     * Save all rules as jStorage.
     */
     $.fn.xmlToJsonFormat = function() {  
-//        $(this).find('MetaAttribute').each(function(){
             var Format;
             var attName = $(this).children('Name').text();
             var attId = $(this).attr('id');
-//            alert(attId);
-            $(this).find('Format').each(function(){
-                var forId = $(this).attr('id');
-                binJson[forId] = {};
-                var rangeType = $(this).find('Range').children()[0].nodeName;
-                var range;
-                if(rangeType=="Interval"){
-                    range = $(this).find('Range Interval').intervalToJson();
+            binJson[attId] = {};
+            var rangeType = $(this).find('Range').children()[0].nodeName;
+            var range;
+            if(rangeType=="Interval"){
+                range = $(this).find('Range Interval').intervalToJson();
+            }
+            else if(rangeType=="Value"){
+                range = $(this).find('Range Value').valuesToJson();
+            }
+            $(this).find('Bin').each(function(){
+                var discretizationType = $(this).children()[1].nodeName;
+                var Bins = [];
+                if(discretizationType=="Interval"){
+                        var vals = $(this).children('Interval').intervalToJson();
+                        var title = $($.parseJSON('['+vals+']')).printInterval();
+                        binJson[attId][$(this).attr('id')] = $.parseJSON('{"name": "in '+
+                                $(this).children('Name').text()+'", "title": "'+
+                                title+'", "vals": ['+vals+']}');
                 }
-                else if(rangeType=="Value"){
-                    range = $(this).find('Range Value').valuesToJson();
+                else if(discretizationType=="Value"){
+                        var vals = $(this).children('Value').valuesToJson();
+                        binJson[attId][$(this).attr('id')] = $.parseJSON('{"name": "'+
+                                $(this).children('Name').text()+'", "title": ['+
+                                vals+'], "vals": ['+vals+']}');
                 }
-                var Discrets = [];
-                $(this).find('DiscretizationHint').each(function(){
-                    var discretizationType = $(this).children()[1].nodeName;
-                    var Bins = [];
-                    if(discretizationType=="IntervalEnumeration"){
-                        $(this).find('IntervalBin').each(function(){
-//                            Bins.push('{"id": "'+$(this).attr('id')+'", "name": "'+
-//                                    $(this).children('Name').text()+'", "vals": ['+
-//                                    $(this).children('Interval').intervalToJson()+']}');
-                            var vals = $(this).children('Interval').intervalToJson();
-//                            alert($(this).children('Interval').attr("rightMargin"));
-                            var title = $($.parseJSON('['+vals+']')).printInterval();
-                            binJson[forId][$(this).attr('id')] = $.parseJSON('{"name": "in '+
-                                    $(this).children('Name').text()+'", "title": "'+
-                                    title+'", "vals": ['+vals+']}');
-                        });
-                    }
-                    else if(discretizationType=="NominalEnumeration"){
-                        $(this).find('NominalBin').each(function(){
-//                            Bins.push('{"id": "'+$(this).attr('id')+'", "name": "'+
-//                                    $(this).children('Name').text()+'", "vals": ['+
-//                                    $(this).children('Value').valuesToJson()+']}');
-                            var vals = $(this).children('Value').valuesToJson();
-                            binJson[forId][$(this).attr('id')] = $.parseJSON('{"name": "'+
-                                    $(this).children('Name').text()+'", "title": ['+
-                                    vals+'], "vals": ['+vals+']}');
-                        });
-                    }
-                    Discrets.push('{"'+$(this).attr('id')+'": [{"name": "'+
-                            $(this).children('Name').text()+'", "bins": ['+
-                            Bins.join(', ')+']}]}');
-                });
-                Format = '{"name": "'+$(this).children('Name').text()+'", "metid": "'+attId+'", "range": {"'+rangeType+'": ['+range+']}, "discrets": ['+Discrets.join(', ')+']}';
-                forJson[$(this).attr('id')] = $.parseJSON(Format);
             });
-//        });
+            Format = '{"name": "'+$(this).children('Name').text()+'", "range": {"'+rangeType+'": ['+range+']}}';
+            forJson[$(this).attr('id')] = $.parseJSON(Format);
     };
-    
-    /** 
-    * Converts XML datas to String in form of JSON.
-    * Save all rules as jStorage.
-    * No more used, leave only for local files testing.
-    */
-//    $.fn.xmlToJsonDatas = function() {  
-//        $(this).find('MetaAttribute').each(function(){
-//            var Format;
-//            var attName = $(this).children('Name').text();
-//            var attId = $(this).attr('id');
-//            $(this).find('Format').each(function(){
-//                var forId = $(this).attr('id');
-//                binJson[forId] = {};
-//                var rangeType = $(this).find('Range').children()[0].nodeName;
-//                var range;
-//                if(rangeType=="Interval"){
-//                    range = $(this).find('Range Interval').intervalToJson();
-//                }
-//                else if(rangeType=="Value"){
-//                    range = $(this).find('Range Value').valuesToJson();
-//                }
-//                var Discrets = [];
-//                $(this).find('DiscretizationHint').each(function(){
-//                    var discretizationType = $(this).children()[1].nodeName;
-//                    var Bins = [];
-//                    if(discretizationType=="IntervalEnumeration"){
-//                        $(this).find('IntervalBin').each(function(){
-////                            Bins.push('{"id": "'+$(this).attr('id')+'", "name": "'+
-////                                    $(this).children('Name').text()+'", "vals": ['+
-////                                    $(this).children('Interval').intervalToJson()+']}');
-//                            binJson[forId][$(this).attr('id')] = $.parseJSON('{"name": "in '+
-//                                    $(this).children('Name').text()+'", "vals": ['+
-//                                    $(this).children('Interval').intervalToJson()+']}');
-//                        });
-//                    }
-//                    else if(discretizationType=="NominalEnumeration"){
-//                        $(this).find('NominalBin').each(function(){
-////                            Bins.push('{"id": "'+$(this).attr('id')+'", "name": "'+
-////                                    $(this).children('Name').text()+'", "vals": ['+
-////                                    $(this).children('Value').valuesToJson()+']}');
-//                            binJson[forId][$(this).attr('id')] = $.parseJSON('{"name": "'+
-//                                    $(this).children('Name').text()+'", "vals": ['+
-//                                    $(this).children('Value').valuesToJson()+']}');
-//                        });
-//                    }
-//                    Discrets.push('{"'+$(this).attr('id')+'": [{"name": "'+
-//                            $(this).children('Name').text()+'", "bins": ['+
-//                            Bins.join(', ')+']}]}');
-//                });
-//                Format = '{"name": "'+$(this).children('Name').text()+'", "metid": "'+attId+'", "range": {"'+rangeType+'": ['+range+']}, "discrets": ['+Discrets.join(', ')+']}';
-//                forJson[$(this).attr('id')] = $.parseJSON(Format);
-//            });
-////            var actMeta = '{"name": "'+attName+'", "formats": ['+Formats.join(', ')+']}';
-//            
-//            //$.cookie(actMetaId, actMeta, { expires: 1, path: '/' });
-//            
-//            attJson[attId] = attName;
-//            
-////            att.push({label: attJson[attId], category: "Att"});
-//            
-////            $('#logDiv').append(attId+": "+Format+"<br /><br />");
-//        });
-////        $('#logDiv').append("<br />");
-//    };
 
 })(jQuery);
-
-/* probably unused 
-var catJson = {};
-var relJson = {};*/
 
 var actRule,        // actual Rule, which is edited
     api,            // JSON with api-connect
@@ -275,31 +165,15 @@ $.when(
             config = data;
             api = config['api-connect'];
         }
-//    }),
-//  these AJAX calls used to be datas and rules for testing
-//    $.ajax({
-//        url: "js/data-demo.xml",
-//        dataType: "xml",
-//        success: function(xml){
-//            $(xml).xmlToJsonDatas();
-//        }
-//    }),
-//
-//    $.ajax({
-//        url: "js/rules-demo.xml",
-//        dataType: "xml",
-//        success: function(xml){
-//            $(xml).xmlToJsonRules();
-//        }
     })
 ).then(function(){
     $.jStorage.flush()
     getRules();
     $.ajax({
-        url: api.server+api['metaattribute-list'],
+        url: api.server+strSymReplace(api['attribute-list'], $_GET.baseId),
         dataType: "xml",
         success: function(xml){
-            $(xml).find('MetaAttribute').each(function(){
+            $(xml).find('Attribute').each(function(){
                 attJson[$(this).attr('id')] = $(this).children('Name').text();
             });
             printAtt();
@@ -321,11 +195,16 @@ $.when(
  */
 getRules = function(){
     $.ajax({
-        url: api.server+api['rule-list'],
+        url: api.server+strSymReplace(api['rule-list'], $_GET.ruleset, $_GET.baseId),
         dataType: "xml",
         success: function(xml){
             $(xml).printRuleList();
-        }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(ajaxOptions);
+            alert(thrownError);
+       }
     });
 }
 
@@ -338,17 +217,17 @@ ruleToHtml = function(id) {
     getRule(id, function(){
         actRule = id;
         var ruleJson = $.parseXML($.jStorage.get("rule-"+id));
-        var $attributes = $(ruleJson).find('Attribute');
+        var $attributes = $(ruleJson).find('RuleAttribute');
         var i = 0
         $attributes.each(function(){
-            if(typeof forJson[$(this).attr('format')] == 'undefined'){
+            if(typeof forJson[$(this).attr('attribute')] == 'undefined'){
                 $.ajax({
-                    url: api.server+api['format-detail']+$(this).attr('format'),
+                    url: api.server+strSymReplace(api['attribute-get'], $(this).attr('attribute'), $_GET.baseId),
                     dataType: "xml",
                     async: false,
                     success: function(xml){
                         i++;
-                        $(xml).find('MetaAttribute').xmlToJsonFormat();
+                        $(xml).find('Attribute').xmlToJsonFormat();
                     }
                 });
             }
@@ -357,6 +236,9 @@ ruleToHtml = function(id) {
         var $Consequent = $(ruleJson).find('Consequent');
         $($Antecedent[0]).rulePartToxHtml('Antecedent');
         $($Consequent[0]).rulePartToxHtml('Consequent');
+        var $rating = $(ruleJson).find('Rating');
+        $("#confidence").val($rating.attr('confidence'));
+        $("#support").val($rating.attr('support'));
         edited = false;
         triggerAfterInsert();
     });
@@ -371,10 +253,10 @@ getRule = function(ruleId, callback) {
     var storageRules = $.jStorage.index();
     if($.inArray("rule-"+ruleId, storageRules) < 0){
         $.ajax({
-            url: api.server+api['rule-detail']+ruleId,
+            url: api.server+strSymReplace(api['rule-get'], ruleId, $_GET.ruleset, $_GET.baseId),
             dataType: "xml",
             success: function(xml){
-                $(xml).find('AssociationRule').storageRule(ruleId);
+                $(xml).find('Rule').storageRule(ruleId);
                 callback();
             }
         });
@@ -382,6 +264,27 @@ getRule = function(ruleId, callback) {
     else{
         callback();
     }
+};
+    
+/** 
+* Substitutes %s with parameters given in list. %%s is used to escape %s.
+* Source: i18n plugin https://github.com/recurser/jquery-i18n/blob/master/jquery.i18n.js
+* @param {String} str to perform printf on
+* @param {String} args Array of arguments for printf
+* @returns {String} substituted string
+*/
+strSymReplace = function(str) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    $.each(args, function(key, val){
+        if(typeof val == 'undefined'){
+            args[key] = '';
+        }
+    });
+    if(arguments.length < 2) return str;
+    return str.replace(/([^%]|^)%(?:(\d+)\$)?s/g, function(p0, p, position) {
+        if(position) return p + args[parseInt(position)-1];
+        return p + args.shift();
+    }).replace(/%%s/g, '%s');
 };
 
 /*
@@ -401,27 +304,121 @@ $( window ).bind('beforeunload', function(){
  */
 $( document ).on("click", ".linkRuleEdit", function(){
     ruleToHtml($(this).attr('rel'));
+}).on("click", ".ruleDelete", function(){
+    var $this = $(this),
+        $rule = $this.siblings('a');
+    if($rule.attr('rel') == actRule){
+        showSmallError($.i18n._('bre-rule-cantDelete'));
+    }
+    else{
+        Apprise($.i18n._('bre-apprise-delrule-question', $rule.text()), {
+            animation: 10,
+            buttons: {
+                confirm: {
+                    text: $.i18n._('bre-apprise-newrule-confirm'),
+                    id: 'delrule-confirm',
+                    action: function(e){
+                        $.ajax({
+                            url: api.server+strSymReplace(api['rule-delete'], $rule.attr('rel'), $_GET.ruleset, $_GET.baseId),
+                            dataType: "html",
+                            success: function(response){
+                                if(response == 'DELETED'){
+                                    showAlert($.i18n._('bre-rule-deleted'), 'success');
+                                }
+                                else{
+                                    showSmallError($.i18n._('bre-rule-undeleted'))
+                                }
+                                getRules();
+                            }
+                        });
+                        Apprise('close');
+                    }
+                },
+                cancel: {
+                    text: $.i18n._('bre-apprise-newrule-cancel'),
+                    id: 'delrule-cancel',
+                    action: function(e){
+                        Apprise('close');
+                    }
+                }
+            },
+            input: false,
+            opacity: '0.80'
+        });
+    }
 }).ajaxStart(function(){
     $('#infoBox').css('visibility', 'visible');
 }).ajaxStop(function() {
     $('#infoBox').css('visibility', 'hidden');
 });
 
+$("#confidence").spinner({
+    min: 0.01,
+    max: 1.00,
+    step: 0.01,
+    numberFormat: "n"
+});
+$("#support").spinner({
+    min: 0.01,
+    max: 1.00,
+    step: 0.01,
+    numberFormat: "n"
+});
+
+$('#newRule').click(function(){
+    if((($(".dragDropBox .button:not(.noSortable)", '#Antecedent').length > 2 &&
+        $(".dragDropBox .button:not(.noSortable)", '#Consequent').length > 2) ||
+        typeof actRule != 'undefined') && edited){
+        Apprise($.i18n._('bre-apprise-newrule-question'), {
+            animation: 10,
+            buttons: {
+                confirm: {
+                    text: $.i18n._('bre-apprise-newrule-confirm'),
+                    id: 'newrule-confirm',
+                    action: function(e){
+                        Apprise('close');
+                        $('#saveRule').click();
+                    }
+                },
+                cancel: {
+                    text: $.i18n._('bre-apprise-newrule-cancel'),
+                    id: 'newrule-cancel',
+                    action: function(e){
+                        edited = true;
+                        emptyConExe();
+                        Apprise('close');
+                    }
+                }
+            },
+            input: false,
+            opacity: '0.80'
+        });
+    }
+    else{
+        edited = true;
+        emptyConExe();
+    }
+}).button({
+    icons: {
+        primary: 'ui-icon-document'
+    }
+});
+
 $('#saveRule').click(function(){
     var lastId;
-    var ruleXml = '<AssociationRule';
+    var ruleXml = '<Rule xmlns="'+config["rule-ns"]+'"';
     if(typeof actRule != 'undefined'){
         ruleXml += ' id="'+actRule+'"';
     }
     ruleXml += '><Text>'+defRuleName()+'</Text><Antecedent>'+
             $('#Antecedent').validateRule()+'</Antecedent><Consequent>'+
-            $('#Consequent').validateRule()+'</Consequent></AssociationRule>';
-    var $ruleXml = $.parseXML(ruleXml);
-    $($ruleXml).find('AssociationRule').storageRule(actRule);
+            $('#Consequent').validateRule()+'</Consequent><Rating confidence="'+
+            $("#confidence").val()+'" support="'+$("#support").val()+'"/></Rule>';
+//    var $ruleXml = $.parseXML(ruleXml);
     $.ajax({
         type: 'POST',
-        url: api.server+api['rule-save'],
-        data: { id: actRule, data: ruleXml },
+        url: api.server+strSymReplace(api['rule-save'], actRule, $_GET.ruleset, $_GET.baseId),
+        data: { data: ruleXml },
         dataType: "xml",
         success: function(response){
             if(changedFormats.length > 0){
@@ -429,20 +426,21 @@ $('#saveRule').click(function(){
                     forJson[this] = undefined;
                     binJson[this] = undefined;
                     $.ajax({
-                        url: api.server+api['format-detail']+this,
+                        url: api.server+strSymReplace(api['attribute-get'], this, $_GET.baseId),
                         dataType: "xml",
                         async: false,
                         success: function(xml){
-                            $(xml).find('MetaAttribute').xmlToJsonFormat();
+                            $(xml).find('Attribute').xmlToJsonFormat();
                         }
                     });
                 });
                 changedFormats = [];
-                $.jStorage.deleteKey("rule-"+actRule);
             }
             emptyConExe();
-            showSuccess($.i18n._('bre-rule-saved'));
+            showAlert($.i18n._('bre-rule-saved'), 'success');
             getRules();
+            $newRule = $(response).find('Rule');
+            $newRule.storageRule($($newRule).attr('id'));
         },
         error: function (xhr, ajaxOptions, thrownError) {
             alert(xhr.status);
@@ -450,38 +448,9 @@ $('#saveRule').click(function(){
             alert(thrownError);
        }
     });
-    
-//    alert(ruleXml);
 }).button({
     icons: {
         primary: 'ui-icon-disk'
-    }
-});
-
-$('#resetServer').click(function(){
-    $.ajax({
-        url: api.server+api.reset,
-        success: function(response){
-            location.reload(true);
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-            alert(xhr.status);
-            alert(ajaxOptions);
-            alert(thrownError);
-       }
-    });
-}).button({
-    icons: {
-        primary: 'ui-icon-refresh'
-    }
-});
-
-$('#closeRule').click(function(){
-    actRule = undefined;
-    emptyConExe();
-}).button({
-    icons: {
-        primary: 'ui-icon-trash'
     }
 });
 

@@ -1,7 +1,10 @@
 .button,
-.draggablePlace{ padding: 8px 15px !important; font-size: 18px; }
-.ui-button{ font-size: 120% !important; }
-.ui-button{ font-size: 1.3em !important; }
+.draggablePlace{ padding: 8px 15px !important; }
+.ui-button,
+label,
+.ui-spinner{ font-size: 130% !important; }
 .draggableSearch{ padding: 5px 8px !important; font-size: 120% !important; }
 .draggableSearchReset{ padding: 8px 6px !important; }
+#rules ul li{ line-height: 36px !important; }
 #rules ul li a{ font-size: 120% !important; }
+.ruleDelete{ padding: 8px 6px !important; }
