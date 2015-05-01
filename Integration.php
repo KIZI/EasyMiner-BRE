@@ -25,4 +25,12 @@ class Integration {
     'css/style.css'
   ];
 
+  /**
+   * Funkce vracející obsah šablony
+   * @return string
+   */
+  public static function getContent(){
+    return file_get_contents(__DIR__.'/content.inc.php');
+  }
+
 }
