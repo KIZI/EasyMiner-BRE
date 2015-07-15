@@ -1,21 +1,22 @@
-  <div id="content">
-      <div id="infoBox" class="ui-widget">
-        <div class="ui-state-highlight ui-corner-all">
-          <p>
-            <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
-            <strong data-i18n="bre-info-loading">Loading</strong> <span data-i18n="bre-info-defaultText">content</span>
-          </p>
-        </div>
-      </div>
-      <div id="alertBox" class="ui-widget">
-        <div class="ui-corner-all">
-          <p>
-            <span class="ui-icon" style="float: left; margin-right: .3em;"></span>
-            <strong></strong>
-          </p>
-        </div>
-      </div>
-      <div class="dragDropLeft fl">
+  <div id="wrapper">
+      <section id="workplace">
+      <section id="content">
+          <div id="infoBox" class="ui-widget">
+              <div class="ui-state-highlight ui-corner-all">
+                  <p>
+                      <span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                      <strong data-i18n="bre-info-loading">Loading</strong> <span data-i18n="bre-info-defaultText">content</span>
+                  </p>
+              </div>
+          </div>
+          <div id="alertBox" class="ui-widget">
+              <div class="ui-corner-all">
+                  <p>
+                      <span class="ui-icon" style="float: left; margin-right: .3em;"></span>
+                      <strong></strong>
+                  </p>
+              </div>
+          </div>
           <div class="ui-widget">
               <h3 class="ui-widget-header ui-state-focus ui-corner-top" data-i18n="bre-condition">Condition</h3>
               <form>
@@ -64,52 +65,66 @@
               <button id="newRule"><span data-i18n="bre-button-newRule">New rule</span></button>
               <button id="saveRule"><span data-i18n="bre-button-saveRule">Save rule</span></button>
           </div>
-      </div>
-      <div class="fr">
-          <div class="ui-widget">
-              <h4 class="ui-widget-header ui-state-default ui-corner-top" data-i18n="bre-binsAndValues">Bins & values</h4>
+          <div class="newRow"></div>
+          <div id="rules" class="ui-widget">
+              <h3 class="ui-widget-header ui-state-default ui-corner-top" data-i18n="bre-head-rulesEdit">Rules to edit</h3>
+              <div class="ui-widget-content ui-corner-bottom">
+                  <ul></ul>
+              </div>
+          </div>
+      </section>
+      </section>
+      <nav id="navigation">
+          <section id="attributes">
+              <h2 class="minimize" data-i18n="bre-binsAndValues">Bins & values <a class="filter" href="#" title="Filter"></a></h2>
+              <div class="datas-filter">
+                  <input type="text" id="attributes-filter" title="Input part of requested attribute name - special characters * and ? are supported.">
+                  <a href="#" class="reset-filter" title="Reset filter"></a>
+              </div>
+              <div class="clearfix">
+                  <div class="scrollable">
+                      <h3 data-i18n="bre-head-bins">Bins</h3>
+                      <ul class="draggableBox draggableBins">
+                          <li class="draggableBoxInfo" data-i18n="bre-binsAndValues-defaultText"></li>
+                      </ul>
+                      <h3 data-i18n="bre-head-values">Values</h3>
+                      <ul class="draggableBox draggableVals">
+                      </ul>
+                  </div>
               <form>
                   <div class="ui-widget-content ui-corner-bottom">
                       <fieldset id="values">
                           <legend data-i18n="bre-binsAndValues">Bins & values</legend>
                           <input type="text" placeholder="search..." class="draggableSearch" data-i18n="(placeholder)bre-placeholder-search" />
                           <a href="#" title="Reset" class="ui-state-error ui-corner-all draggableSearchReset" data-i18n="(title)bre-link-searchReset"><span class="ui-icon ui-icon-cancel"/></a>
-                          <div class="scrollable">
-                              <h4 data-i18n="bre-head-bins">Bins</h4>
-                              <ul class="draggableBox draggableBins">
-                                  <li class="draggableBoxInfo" data-i18n="bre-binsAndValues-defaultText"></li>
-                              </ul>
-                              <h4 data-i18n="bre-head-values">Values</h4>
-                              <ul class="draggableBox draggableVals">
-                              </ul>
-                          </div>
                       </fieldset>
                   </div>
               </form>
-          </div>
-          <div class="ui-widget">
-              <h4 class="ui-widget-header ui-state-active ui-corner-top" data-i18n="bre-metaattributes">Metaattributes</h4>
+              </div>
+          </section>
+          <section id="data-fields">
+              <h2 class="minimize" data-i18n="bre-metaattributes">Metaattributes <a class="filter" href="#" title="Filter"></a></h2>
+              <div class="datas-filter">
+                  <input type="text" id="attributes-filter" title="Input part of requested attribute name - special characters * and ? are supported.">
+                  <a href="#" class="reset-filter" title="Reset filter"></a>
+              </div>
+              <div class="clearfix">
+                  <div class="scrollable">
+                      <ul class="draggableBox">
+                      </ul>
+                  </div>
               <form>
                   <div class="ui-widget-content ui-corner-bottom ui-widget-content-active">
-                      <fieldset id="attributes">
+                      <fieldset id="attributes2">
                           <legend data-i18n="bre-metaattributes">Metaattributes</legend>
                           <input type="text" placeholder="search..." class="draggableSearch" data-i18n="(placeholder)bre-placeholder-search" />
                           <a href="#" title="Reset" class="ui-state-error ui-corner-all draggableSearchReset" data-i18n="(title)bre-link-searchReset"><span class="ui-icon ui-icon-cancel"/></a>
-                          <div class="scrollable">
-                              <ul class="draggableBox">
-                              </ul>
-                          </div>
                       </fieldset>
                   </div>
               </form>
-          </div>
-      </div>
+              </div>
+          </section>
+      </nav>
       <div id="logDiv" class="newRow"></div>
-      <div id="rules" class="ui-widget">
-          <h3 class="ui-widget-header ui-state-default ui-corner-top" data-i18n="bre-head-rulesEdit">Rules to edit</h3>
-          <div class="ui-widget-content ui-corner-bottom">
-              <ul></ul>
-          </div>
-      </div>
       <button id="cssTouch"><span data-i18n="bre-button-touchCssEnable">Switch to styles for touch screens</span></button>
   </div>

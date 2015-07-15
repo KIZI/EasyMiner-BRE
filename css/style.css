@@ -14,7 +14,7 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 
 #alertBox{ opacity: 0; }
 
-/* style modifications for jQuery Widget */
+/* style modifications for jQuery Widget
 .ui-widget{ margin: .5em 0; }
 .ui-widget p{ margin: .5em 0; overflow: hidden; }
 .ui-widget .ui-corner-all{ padding: 4px; }
@@ -26,7 +26,7 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 .ui-widget .ui-widget-content{ overflow: hidden; padding: 2px 5px; }
 .ui-widget .ui-widget-content-active{ border-color: #ACDD4A; }
 .ui-widget fieldset{ border: none; padding: 0; }
-.ui-widget fieldset legend{ display: none; }
+.ui-widget fieldset legend{ display: none; }*/
 
 
 
@@ -44,7 +44,7 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 .autocompleteBox .autocompleteBoxElm{ display: block; float: left; }
 /*.autocompleteBox .autocompleteBoxElm:hover{ border-bottom: 1px dashed; }
                  .autocompleteBoxElm ul,*/
-.ui-state-focus{ background-color: #DADADA }
+/*.ui-state-focus{ background-color: #DADADA }*/
 .ui-autocomplete{ display: none; padding: 5px; list-style-type: none; border: 1px dotted; border-top: none; background-color: #fff; overflow: hidden; min-width: 140px !important; }
 .ui-autocomplete-category{ font-weight: bold; padding: .2em .4em; margin: .8em 0 .2em; line-height: 1.5; }
 .ui-autocomplete-category-log{ position: relative !important; display: block !important; height: 22px; background-color: #fff; }
@@ -65,9 +65,9 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 .autocompleteBox .autocompleteBoxEnd{ position: absolute; right: 5px; bottom: 0; }
 
 /* Drag&Drop styles */
-.dragDropLeft{ overflow: hidden; }
-.dragDropLeft form{ overflow: hidden; padding-bottom: 10px; }
-.dragDropLeft fieldset{ }
+#content{ overflow: hidden; }
+#content form{ overflow: hidden; padding-bottom: 10px; }
+#content fieldset{ }
 .dragDropBox{ position: relative; width: 680px; min-height: 35px; padding: 0 30px 0 0; list-style-type: none; }
 .dragDropBox li{ display: inline-table; margin: 2px; }
 .dragDropBox li span{ }
@@ -99,10 +99,10 @@ label{ font-size: 1.1em; }
 .draggableBox{ margin: 0; padding: 0; list-style-type: none; }
 .draggableBox .button{ float: left; cursor: move; }
 .draggableBox .draggableBoxInfo{ width: 150px; }
-.fr div.scrollable{ margin-top: 5px; height: 235px; overflow-y: auto; }
-.fr div.scrollable h4{ clear: both; margin: 5px 0 2px; }
-.fr .draggableBox .button{ margin: 1px 0; clear: left; }
-.fr input{ width: 150px; margin-right: 2px; padding: 3px 4px; }
+#navigation div.scrollable{ margin-top: 5px; height: 235px; overflow-y: auto; }
+#navigation div.scrollable h3{ clear: both; margin: 5px 0 2px; }
+#navigation .draggableBox .button{ margin: 1px 0; clear: left; }
+#navigation input{ width: 150px; margin-right: 2px; padding: 3px 4px; }
 .draggablePlace{ display: block; padding: 5px 10px; text-align: center; border: #cacaca 1px dotted; }
 .draggableBoxRel{ visibility: hidden; clear: left; }
 .draggableBoxRel .button{ /*float: left; */margin: 5px; overflow: hidden; }
