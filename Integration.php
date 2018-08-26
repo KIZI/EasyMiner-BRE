@@ -3,6 +3,10 @@
 namespace EasyMiner\BRE;
 
 class Integration {
+
+  /** @const string MODULE_NAME */
+  const MODULE_NAME='BRE';
+
   /**
    * @var $javascriptFiles - this array contains list of javascript files for inclusion into page
    */

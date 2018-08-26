@@ -159,7 +159,7 @@ var actRule,        // actual Rule, which is edited
 
 $.when(
     $.ajax({
-        url: "js/config.json",
+        url: (window.moduleBaseUrls['BRE']?window.moduleBaseUrls['BRE']:'.')+"/js/config.json",
         dataType: "json",
         success: function(data) {
             config = data;
@@ -167,7 +167,7 @@ $.when(
         }
     })
 ).then(function(){
-    $.jStorage.flush()
+    $.jStorage.flush();
     getRules();
     $.ajax({
         url: api.server+strSymReplace(api['attribute-list'], $_GET.baseId),
