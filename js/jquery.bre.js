@@ -36,10 +36,8 @@ var init = function(){
 getRules = function(){
     $.ajax({
         url: config.getRuleListUrl(rulesetId),
-        dataType: "xml",
-        success: function(xml){
-            $(xml).printRuleList();
-        },
+        dataType: "json",
+        success: printRuleList,
         error: function (xhr, ajaxOptions, thrownError) {
             alert(xhr.status);
             alert(ajaxOptions);
@@ -294,6 +292,7 @@ $('#saveRule').click(function(){
     }
 });
 
+/*
 $('#cssTouch').click(function(){
     if($('head link[href="css/styleTouch.css"]').length > 0){
         $('head link[href="css/styleTouch.css"]').remove();
@@ -308,6 +307,18 @@ $('#cssTouch').click(function(){
         primary: 'ui-icon-newwin'
     }
 });
+*/
+
+/**
+ * Prints rule list to UI.
+ */
+var printRuleList = function(rulesetJson) {
+    $('#rules ul').empty();
+    $.each(rulesetJson.rules,function(ruleId,rule){
+        $('#rules ul').append('<li><a href="#" title="'+$.i18n._('bre-editRule')+' '+rule.text+'" rel="'+rule.id+'" class="linkRuleEdit">'+rule.text+'</a><a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" class="ui-state-error ruleDelete"><span class="ui-icon ui-icon-cancel"/></li>');
+        //TODO zobrazit hodnoty měr zajímavosti?
+    });
+};
 
 
 (function($){
@@ -386,16 +397,6 @@ $('#cssTouch').click(function(){
             values.push('"'+$(this).text()+'"');
         });
         return (values.join(', '));
-    };
-
-    /**
-     * Prints rule list to UI.
-     */
-    $.fn.printRuleList = function() {
-        $('#rules ul').empty();
-        $(this).find('Rule').each(function(){
-            $('#rules ul').append('<li><a href="#" title="'+$.i18n._('bre-editRule')+' '+$(this).children('Text').text()+'" rel="'+$(this).attr('id')+'" class="linkRuleEdit">'+$(this).children('Text').text()+'</a><a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" class="ui-state-error ruleDelete"><span class="ui-icon ui-icon-cancel"/></li>');
-        });
     };
 
     /**

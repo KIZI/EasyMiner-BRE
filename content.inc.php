@@ -126,5 +126,4 @@
           </section>
       </nav>
       <div id="logDiv" class="newRow"></div>
-      <button id="cssTouch"><span data-i18n="bre-button-touchCssEnable">Switch to styles for touch screens</span></button>
   </div>
