@@ -1,4 +1,4 @@
-{
+{/*tento soubor již není platný - v rámci integrace byla konfigurace BRE přesunuta do modulu EasyMinerCenter*/
     "locale": "en",
     "init-brackets": true,
     "init-helper": true,

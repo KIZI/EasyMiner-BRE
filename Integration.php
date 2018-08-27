@@ -26,8 +26,8 @@ class Integration {
    * @var $cssFiles - this array contains list of CSS files for inclusion into page
    */
   public static $cssFiles = [
-    'css/style.css',
-      '../_miningUI/css/index.css'
+    '../_miningUI/css/index.css',
+    'css/style.css'
   ];
 
   /**

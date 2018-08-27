@@ -1,176 +1,16 @@
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-(function($){
-    
-    /**
-     * Overwrites original jQuery selector :contains to Case-Insensitive version.
-     * Source: http://css-tricks.com/snippets/jquery/make-jquery-contains-case-insensitive/
-     */
-    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
-        return function( elem ) {
-            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-        };
-    });
-    
-    /**
-     * Array of all ajax requests, which can be aborted using abortAll function.
-     * Source: http://stackoverflow.com/questions/1802936/stop-all-active-ajax-requests-in-jquery
-     */
-    $.xhrPool = [];
-    $.xhrPool.abortAll = function() {
-        $(this).each(function(idx, jqXHR) {
-            jqXHR.abort();
-        });
-        $.event.trigger("ajaxStop");
-        $.xhrPool.length = 0
-    };
-    $.ajaxSetup({
-        beforeSend: function(jqXHR) {
-            $.xhrPool.push(jqXHR);
-        },
-        complete: function(jqXHR) {
-            var index = $.xhrPool.indexOf(jqXHR);
-            if (index > -1) {
-                $.xhrPool.splice(index, 1);
-            }
-        }
-    });
-    
-    /** 
-    * Applies i18n on element. Element has to have attribute 'data-i18n'.
-    * If value of this attribute contains something between parentheses, rest
-    * of value will be replaced instead of attribute, which name suits to expression
-    * between parentheses. If not, it will call normal i18n function for content.
-    */
-    $.fn.i18nApply = function() {
-        $(this).each(function(){
-            var attr = $(this).attr('data-i18n'),
-                regExp = /\(([^)]+)\)/,
-                matches = regExp.exec($(this).attr('data-i18n')) || [];
-            if(matches.length < 1){
-                $(this)._t(attr);
-            } else{
-                $(this).attr(matches[1], $.i18n._(attr.replace(matches[0],'')));
-            }
-        });
-    };
-    
-    /** 
-    * Converts XML Interval to JSON.
-    */
-    $.fn.intervalToJson = function() { 
-        var intervals = [];
-        $(this).each(function(){
-            intervals.push('["'+$(this).attr("closure")+'", "'+$(this).attr("leftMargin")
-                +'", "'+$(this).attr("rightMargin")+'"]');
-        });
-        return (intervals.join(', '));
-    };
-    
-    /** 
-    * Converts XML Values to JSON.
-    */
-    $.fn.valuesToJson = function() { 
-        var values = [];
-        $(this).each(function(){
-            values.push('"'+$(this).text()+'"');
-        });
-        return (values.join(', '));
-    };
-    
-    /** 
-    * Prints rule list to UI.
-    */
-    $.fn.printRuleList = function() {
-        $('#rules ul').empty();
-        $(this).find('Rule').each(function(){
-            $('#rules ul').append('<li><a href="#" title="'+$.i18n._('bre-editRule')+' '+$(this).children('Text').text()+'" rel="'+$(this).attr('id')+'" class="linkRuleEdit">'+$(this).children('Text').text()+'</a><a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" class="ui-state-error ruleDelete"><span class="ui-icon ui-icon-cancel"/></li>');
-        });
-    };
-    
-    /** 
-    * Saves XML of rule to localStorage as String using jStorage plugin.
-    * @param {String} ruleId rules unique ID
-    */
-    $.fn.storageRule = function(ruleId) {
-        var rule = $(this);
-        var xmlString;
-        if (window.ActiveXObject){ 
-            xmlString = rule[0]; 
-        }
-        else {
-            var oSerializer = new XMLSerializer(); 
-            xmlString = oSerializer.serializeToString(rule[0]);
-        } 
-        $.jStorage.set("rule-"+ruleId, xmlString);
-    };
-    
-    /** 
-    * Converts XML of format to String in form of JSON.
-    * Save all rules as jStorage.
-    */
-    $.fn.xmlToJsonFormat = function() {  
-            var Format;
-            var attName = $(this).children('Name').text();
-            var attId = $(this).attr('id');
-            binJson[attId] = {};
-            var rangeType = $(this).find('Range').children()[0].nodeName;
-            var range;
-            if(rangeType=="Interval"){
-                range = $(this).find('Range Interval').intervalToJson();
-            }
-            else if(rangeType=="Value"){
-                range = $(this).find('Range Value').valuesToJson();
-            }
-            $(this).find('Bin').each(function(){
-                var discretizationType = $(this).children()[1].nodeName;
-                var Bins = [];
-                if(discretizationType=="Interval"){
-                        var vals = $(this).children('Interval').intervalToJson();
-                        var title = $($.parseJSON('['+vals+']')).printInterval();
-                        binJson[attId][$(this).attr('id')] = $.parseJSON('{"name": "in '+
-                                $(this).children('Name').text()+'", "title": "'+
-                                title+'", "vals": ['+vals+']}');
-                }
-                else if(discretizationType=="Value"){
-                        var vals = $(this).children('Value').valuesToJson();
-                        binJson[attId][$(this).attr('id')] = $.parseJSON('{"name": "'+
-                                $(this).children('Name').text()+'", "title": ['+
-                                vals+'], "vals": ['+vals+']}');
-                }
-            });
-            Format = '{"name": "'+$(this).children('Name').text()+'", "range": {"'+rangeType+'": ['+range+']}}';
-            forJson[$(this).attr('id')] = $.parseJSON(Format);
-    };
-
-})(jQuery);
-
 var actRule,        // actual Rule, which is edited
-    api,            // JSON with api-connect
     attJson = {},   // JSON of all metaattributes in knowledge base
     binJson = {},   // JSON of all bins in knowledge base
-    config,         // JSON of config
     edited = false, // boolean if the rule was changed or not
     forJson = {},   // JSON of formats
     changedFormats = [],    // array of changed Formats
     rels = [];      // relations - used mainly in Autocomplete version
 
-$.when(
-    $.ajax({
-        url: (window.moduleBaseUrls['BRE']?window.moduleBaseUrls['BRE']:'.')+"/js/config.json",
-        dataType: "json",
-        success: function(data) {
-            config = data;
-            api = config['api-connect'];
-        }
-    })
-).then(function(){
+var init = function(){
     $.jStorage.flush();
     getRules();
     $.ajax({
-        url: api.server+strSymReplace(api['attribute-list'], $_GET.baseId),
+        url: config.getAttributeListUrl(rulesetId),
         dataType: "xml",
         success: function(xml){
             $(xml).find('Attribute').each(function(){
@@ -180,7 +20,7 @@ $.when(
         }
     });
     $.ajax({
-        url: "i18n/"+config.locale+".json",
+        url: breResourcesUrl+"/i18n/"+config.locale+".json",
         dataType: "json",
         success: function(data) {
             $.i18n.load(data);
@@ -188,14 +28,14 @@ $.when(
             applyConfig();
         }
     });
-});
+};
 
 /**
  * Gets rule list from server.
  */
 getRules = function(){
     $.ajax({
-        url: api.server+strSymReplace(api['rule-list'], $_GET.ruleset, $_GET.baseId),
+        url: config.getRuleListUrl(rulesetId),
         dataType: "xml",
         success: function(xml){
             $(xml).printRuleList();
@@ -206,7 +46,7 @@ getRules = function(){
             alert(thrownError);
        }
     });
-}
+};
 
 /** 
 * Converts rule in JSON form to editable HTML in editor.
@@ -218,11 +58,11 @@ ruleToHtml = function(id) {
         actRule = id;
         var ruleJson = $.parseXML($.jStorage.get("rule-"+id));
         var $attributes = $(ruleJson).find('RuleAttribute');
-        var i = 0
+        var i = 0;
         $attributes.each(function(){
             if(typeof forJson[$(this).attr('attribute')] == 'undefined'){
                 $.ajax({
-                    url: api.server+strSymReplace(api['attribute-get'], $(this).attr('attribute'), $_GET.baseId),
+                    url: config.getAttributeUrl($(this).attr('attribute'), rulesetId),
                     dataType: "xml",
                     async: false,
                     success: function(xml){
@@ -253,7 +93,7 @@ getRule = function(ruleId, callback) {
     var storageRules = $.jStorage.index();
     if($.inArray("rule-"+ruleId, storageRules) < 0){
         $.ajax({
-            url: api.server+strSymReplace(api['rule-get'], ruleId, $_GET.ruleset, $_GET.baseId),
+            url: config.getRuleUrl(ruleId, rulesetId),
             dataType: "xml",
             success: function(xml){
                 $(xml).find('Rule').storageRule(ruleId);
@@ -319,7 +159,7 @@ $( document ).on("click", ".linkRuleEdit", function(){
                     id: 'delrule-confirm',
                     action: function(e){
                         $.ajax({
-                            url: api.server+strSymReplace(api['rule-delete'], $rule.attr('rel'), $_GET.ruleset, $_GET.baseId),
+                            url: config.getDeleteRuleUrl($rule.attr('rel'), rulesetId),
                             dataType: "html",
                             success: function(response){
                                 if(response == 'DELETED'){
@@ -417,7 +257,7 @@ $('#saveRule').click(function(){
 //    var $ruleXml = $.parseXML(ruleXml);
     $.ajax({
         type: 'POST',
-        url: api.server+strSymReplace(api['rule-save'], actRule, $_GET.ruleset, $_GET.baseId),
+        url: config.getSaveRuleUrl(actRule, rulesetId),
         data: { data: ruleXml },
         dataType: "xml",
         success: function(response){
@@ -426,7 +266,7 @@ $('#saveRule').click(function(){
                     forJson[this] = undefined;
                     binJson[this] = undefined;
                     $.ajax({
-                        url: api.server+strSymReplace(api['attribute-get'], this, $_GET.baseId),
+                        url: config.getAttributeUrl(this, rulesetId),
                         dataType: "xml",
                         async: false,
                         success: function(xml){
@@ -468,3 +308,150 @@ $('#cssTouch').click(function(){
         primary: 'ui-icon-newwin'
     }
 });
+
+
+(function($){
+
+    /**
+     * Overwrites original jQuery selector :contains to Case-Insensitive version.
+     * Source: http://css-tricks.com/snippets/jquery/make-jquery-contains-case-insensitive/
+     */
+    $.expr[":"].contains = $.expr.createPseudo(function(arg) {
+        return function( elem ) {
+            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
+
+    /**
+     * Array of all ajax requests, which can be aborted using abortAll function.
+     * Source: http://stackoverflow.com/questions/1802936/stop-all-active-ajax-requests-in-jquery
+     */
+    $.xhrPool = [];
+    $.xhrPool.abortAll = function() {
+        $(this).each(function(idx, jqXHR) {
+            jqXHR.abort();
+        });
+        $.event.trigger("ajaxStop");
+        $.xhrPool.length = 0
+    };
+    $.ajaxSetup({
+        beforeSend: function(jqXHR) {
+            $.xhrPool.push(jqXHR);
+        },
+        complete: function(jqXHR) {
+            var index = $.xhrPool.indexOf(jqXHR);
+            if (index > -1) {
+                $.xhrPool.splice(index, 1);
+            }
+        }
+    });
+
+    /**
+     * Applies i18n on element. Element has to have attribute 'data-i18n'.
+     * If value of this attribute contains something between parentheses, rest
+     * of value will be replaced instead of attribute, which name suits to expression
+     * between parentheses. If not, it will call normal i18n function for content.
+     */
+    $.fn.i18nApply = function() {
+        $(this).each(function(){
+            var attr = $(this).attr('data-i18n'),
+                regExp = /\(([^)]+)\)/,
+                matches = regExp.exec($(this).attr('data-i18n')) || [];
+            if(matches.length < 1){
+                $(this)._t(attr);
+            } else{
+                $(this).attr(matches[1], $.i18n._(attr.replace(matches[0],'')));
+            }
+        });
+    };
+
+    /**
+     * Converts XML Interval to JSON.
+     */
+    $.fn.intervalToJson = function() {
+        var intervals = [];
+        $(this).each(function(){
+            intervals.push('["'+$(this).attr("closure")+'", "'+$(this).attr("leftMargin")
+                +'", "'+$(this).attr("rightMargin")+'"]');
+        });
+        return (intervals.join(', '));
+    };
+
+    /**
+     * Converts XML Values to JSON.
+     */
+    $.fn.valuesToJson = function() {
+        var values = [];
+        $(this).each(function(){
+            values.push('"'+$(this).text()+'"');
+        });
+        return (values.join(', '));
+    };
+
+    /**
+     * Prints rule list to UI.
+     */
+    $.fn.printRuleList = function() {
+        $('#rules ul').empty();
+        $(this).find('Rule').each(function(){
+            $('#rules ul').append('<li><a href="#" title="'+$.i18n._('bre-editRule')+' '+$(this).children('Text').text()+'" rel="'+$(this).attr('id')+'" class="linkRuleEdit">'+$(this).children('Text').text()+'</a><a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" class="ui-state-error ruleDelete"><span class="ui-icon ui-icon-cancel"/></li>');
+        });
+    };
+
+    /**
+     * Saves XML of rule to localStorage as String using jStorage plugin.
+     * @param {String} ruleId rules unique ID
+     */
+    $.fn.storageRule = function(ruleId) {
+        var rule = $(this);
+        var xmlString;
+        if (window.ActiveXObject){
+            xmlString = rule[0];
+        }
+        else {
+            var oSerializer = new XMLSerializer();
+            xmlString = oSerializer.serializeToString(rule[0]);
+        }
+        $.jStorage.set("rule-"+ruleId, xmlString);
+    };
+
+    /**
+     * Converts XML of format to String in form of JSON.
+     * Save all rules as jStorage.
+     */
+    $.fn.xmlToJsonFormat = function() {
+        var Format;
+        var attName = $(this).children('Name').text();
+        var attId = $(this).attr('id');
+        binJson[attId] = {};
+        var rangeType = $(this).find('Range').children()[0].nodeName;
+        var range;
+        if(rangeType=="Interval"){
+            range = $(this).find('Range Interval').intervalToJson();
+        }
+        else if(rangeType=="Value"){
+            range = $(this).find('Range Value').valuesToJson();
+        }
+        $(this).find('Bin').each(function(){
+            var discretizationType = $(this).children()[1].nodeName;
+            var Bins = [];
+            if(discretizationType=="Interval"){
+                var vals = $(this).children('Interval').intervalToJson();
+                var title = $($.parseJSON('['+vals+']')).printInterval();
+                binJson[attId][$(this).attr('id')] = $.parseJSON('{"name": "in '+
+                    $(this).children('Name').text()+'", "title": "'+
+                    title+'", "vals": ['+vals+']}');
+            }
+            else if(discretizationType=="Value"){
+                var vals = $(this).children('Value').valuesToJson();
+                binJson[attId][$(this).attr('id')] = $.parseJSON('{"name": "'+
+                    $(this).children('Name').text()+'", "title": ['+
+                    vals+'], "vals": ['+vals+']}');
+            }
+        });
+        Format = '{"name": "'+$(this).children('Name').text()+'", "range": {"'+rangeType+'": ['+range+']}}';
+        forJson[$(this).attr('id')] = $.parseJSON(Format);
+    };
+
+    init();
+})(jQuery);

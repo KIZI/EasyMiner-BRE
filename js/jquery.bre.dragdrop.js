@@ -84,7 +84,7 @@
     
     /** 
     * Gets attribute with one or more categories inside brakets.
-    * @param {Int} i index of elm in array of jQuery objects
+    * @param {number} i index of elm in array of jQuery objects
     */
     $.fn.getAttribute = function(i){
 //        alert('called getAttribute');
@@ -221,12 +221,12 @@
             closure[1] = (rel.indexOf('or equals')>0) ? 'Closed' : 'Open';
         }
         return closure;
-    }
+    };
     
     /**
      * Gets margins of interval.
-     * @param {Array} closure array of closure parts
-     * @param {Integer} val of margin
+     * @param {Array} margins - closure array of closure parts
+     * @param {number} val of margin
      */
     $.fn.getMargins = function(margins, val){
         var rel = $(this).attr('rel');
@@ -236,16 +236,14 @@
             margins[1] = val;
         }
         return margins;
-    }
+    };
 
     /**
      * Gets interval to be printable.
      * @return {String} Interval in text form
      */
     $.fn.printInterval = function(){
-//        alert($.isArray(this[0]));
         if($.isArray(this[0])){
-//            alert(this.length);
             var intervals = [];
             $.each(this, function(k, d){
                 intervals.push($(d).printInterval());
@@ -269,7 +267,7 @@
 
     /** 
     * Validates cedent rule part to XML. Array of objects are inside brackets.
-    * @param {Int} fromI index of array which should loop counts from
+    * @param {number} fromI index of array which should loop counts from
     * @return {Array} attributes, connective between attributes
     */
     $.fn.validateCedent = function(fromI){
@@ -328,7 +326,7 @@
                 }
                 attrs.push(attribute);
             }
-        };
+        }
         return [attrs.join(''), connective];
     };
 
@@ -411,17 +409,18 @@ applyConfig = function(){
         }
         else{
             rels.push({label: this.label, category: "Log"});
-//                relJson[this.label] = '{"visible": '
             if(this.visible){
                 var $operator = $("<li>").html(this.label).attr('rel',this.label).addClass('button dragDropElmRel');
                 if(newRow){
                     $operator.css('clear', 'left');
                     newRow = false;
                 }
-                $('.draggableBoxRel').append($operator)
+                $('.draggableBoxRel').css({visibility:'visible'});
+                //XXX Standa: původní varianta: $('.draggableBoxRel').append($operator)
             }
         }
-    })
+    });
+    $('.draggableBoxRel').show();//XXX Standa: tato řádka byla přidána
     if(config['init-brackets']){
         $('.dragDropBox').append('<li class="button noSortable dragDropBoxEnd">)</li>\n\
             <li class="button noSortable">(</li>');
@@ -549,7 +548,7 @@ insertOperatorThan = function($item){
 /**
  * Checks if value is in interval. Recursive.
  * @param {Array} interval to be checked
- * @param {Integer} val which should be inside interval
+ * @param {Number} val which should be inside interval
  * @returns {String} Boolean or interval as a string
  */
 isValueInInterval = function(interval, val){
@@ -625,7 +624,7 @@ processValues = function(rel){
     };
     if(typeof forJson[rel] == 'undefined'){
         $.ajax({
-            url: api.server+strSymReplace(api['attribute-get'], rel, $_GET.baseId),
+            url: config.getAttributeUrl(rel, rulesetId),
             dataType: "xml",
             success: function(xml){
                 $(xml).find('Attribute').xmlToJsonFormat();
@@ -723,7 +722,7 @@ $(document).on("mouseover", ".draggableBox li", function(){
             helper: "clone",
             opacity: 0.7,
             drag: function(e, ui){
-                ui.position.top = parseInt(ui.offset.top);
+                //XXX Standa: původně tento řádek: ui.position.top = parseInt(ui.offset.top);
             }
         });
     }

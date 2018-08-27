@@ -1,42 +1,42 @@
-<?xml version="1.0" encoding="windows-1250"?>
-<AssociationRules xmlns="http://keg.vse.cz/lm/AssociationRules/v1.0"> <!-- asociační pravidla transformovaná do podoby použitelné pro business rules -->
-    <AssociationRule id="uri:rules/rule-1">
-        <Text>duration(12) &gt;:&lt; rating(A)</Text>
+<?xml version="1.0" encoding="utf-8"?>
+<Rules xmlns="http://keg.vse.cz/lm/AssociationRules/v1.0"> <!-- asociaÄŤnĂ­ pravidla transformovanĂˇ do podoby pouĹľitelnĂ© pro business rules -->
+    <Rule id="uri:rules/rule-1">
+        <Text>population([607430;1000000]) &amp; area(6720) &amp; latitude((40.1;45]) â†’ unemployment(low)</Text>
         
-        <Antecedent> <!-- podmínka pravidla -->
+        <Antecedent> <!-- podmĂ­nka pravidla -->
             <Attribute format="uri:/test/format/duration-demo_13_csv251">
                 <Category id="uri:/test/discr-duration-1-1" />
             </Attribute>
         </Antecedent>
         
         <Consequent>
-            <Cedent connective="Conjunction"><!-- je možná varianta jak jednoho dílčího cedentu, tak také vnoření atributu přímo do antecedentu/consequentu -->
+            <Cedent connective="Conjunction"><!-- je moĹľnĂˇ varianta jak jednoho dĂ­lÄŤĂ­ho cedentu, tak takĂ© vnoĹ™enĂ­ atributu pĹ™Ă­mo do antecedentu/consequentu -->
                 <Attribute format="uri:/test/format/rating-demo_13_csv251">
                     <Category id="uri:test/discr-rat-a" />
                 </Attribute>
             </Cedent>
         </Consequent>
         
-    </AssociationRule>
+    </Rule>
     
-    <AssociationRule id="uri:rules/rule-2">
-        <Text>duration(12) or  &gt;:&lt; rating(A)</Text>
+    <Rule id="uri:rules/rule-2">
+        <Text>population([298000;368200]) &amp; area(6710) &amp; longitude((0;10]) â†’ unemployment(medium)</Text>
         
-        <Antecedent> <!-- podmínka pravidla -->
+        <Antecedent> <!-- podmĂ­nka pravidla -->
             <Attribute format="uri:/test/format/duration-demo_13_csv251">
                 <Category id="uri:/test/discr-duration-1-1" />
             </Attribute>
         </Antecedent>
         
         <Consequent>
-            <Cedent connective="Conjunction"><!-- je možná varianta jak jednoho dílčího cedentu, tak také vnoření atributu přímo do antecedentu/consequentu -->
+            <Cedent connective="Conjunction"><!-- je moĹľnĂˇ varianta jak jednoho dĂ­lÄŤĂ­ho cedentu, tak takĂ© vnoĹ™enĂ­ atributu pĹ™Ă­mo do antecedentu/consequentu -->
                 <Attribute format="uri:/test/format/rating-demo_13_csv251">
                     <Category id="uri:test/discr-rat-a" />
                 </Attribute>
             </Cedent>
         </Consequent>
         
-    </AssociationRule>
+    </Rule>
     
     <AssociationRule id="uri:rules/rule-3">
         <Text>duration(12,20,30) &gt;:&lt; rating(A)</Text>
@@ -186,4 +186,4 @@
     
     
     
-</AssociationRules>
+</Rules>
