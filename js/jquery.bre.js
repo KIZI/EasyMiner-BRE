@@ -10,13 +10,10 @@ var init = function(){
     $.jStorage.flush();
     getRules();
     $.ajax({
-        url: config.getAttributeListUrl(rulesetId),
-        dataType: "xml",
-        success: function(xml){
-            $(xml).find('Attribute').each(function(){
-                attJson[$(this).attr('id')] = $(this).children('Name').text();
-            });
-            printAtt();
+        url: config.getAttributeListUrl(minerId),
+        dataType: "json",
+        success: function(data){
+            printAttributes(data);
         }
     });
     $.ajax({

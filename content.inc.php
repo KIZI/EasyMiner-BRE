@@ -75,7 +75,7 @@
       </section>
       </section>
       <nav id="navigation">
-          <section id="attributes">
+          <section class="attributesPalette" id="values">
               <h2 class="minimize" data-i18n="bre-binsAndValues">Bins & values <a class="filter" href="#" title="Filter"></a></h2>
               <div class="datas-filter">
                   <input type="text" id="attributes-filter" title="Input part of requested attribute name - special characters * and ? are supported.">
@@ -91,6 +91,7 @@
                       <ul class="draggableBox draggableVals">
                       </ul>
                   </div>
+                <!--
               <form>
                   <div class="ui-widget-content ui-corner-bottom">
                       <fieldset id="values">
@@ -99,11 +100,11 @@
                           <a href="#" title="Reset" class="ui-state-error ui-corner-all draggableSearchReset" data-i18n="(title)bre-link-searchReset"><span class="ui-icon ui-icon-cancel"/></a>
                       </fieldset>
                   </div>
-              </form>
+              </form>-->
               </div>
           </section>
-          <section id="data-fields">
-              <h2 class="minimize" data-i18n="bre-metaattributes">Metaattributes <a class="filter" href="#" title="Filter"></a></h2>
+          <section class="attributesPalette" id="attributes">
+              <h2 class="minimize" data-i18n="bre-metaattributes">Attributes <a class="filter" href="#" title="Filter"></a></h2>
               <div class="datas-filter">
                   <input type="text" id="attributes-filter" title="Input part of requested attribute name - special characters * and ? are supported.">
                   <a href="#" class="reset-filter" title="Reset filter"></a>
@@ -113,15 +114,16 @@
                       <ul class="draggableBox">
                       </ul>
                   </div>
+                <!--
               <form>
                   <div class="ui-widget-content ui-corner-bottom ui-widget-content-active">
                       <fieldset id="attributes2">
                           <legend data-i18n="bre-metaattributes">Metaattributes</legend>
                           <input type="text" placeholder="search..." class="draggableSearch" data-i18n="(placeholder)bre-placeholder-search" />
-                          <a href="#" title="Reset" class="ui-state-error ui-corner-all draggableSearchReset" data-i18n="(title)bre-link-searchReset"><span class="ui-icon ui-icon-cancel"/></a>
+                          <a href="#" title="Reset" class="ui-state-error ui-corner-all draggableSearchReset" data-i18n="(title)bre-link-searchReset"><span class="ui-icon ui-icon-cancel"></span></a>
                       </fieldset>
                   </div>
-              </form>
+              </form>-->
               </div>
           </section>
       </nav>

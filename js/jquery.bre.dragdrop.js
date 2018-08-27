@@ -582,9 +582,9 @@ isValueInInterval = function(interval, val){
 /** 
 * Processes attributes to insert into the box of attributes.
 */
-printAtt = function(){
-    $.each(attJson, function(key, data){
-        $('#attributes .draggableBox').append($("<li>").html(data).attr('rel',key).addClass('button dragDropElmAtt'));
+var printAttributes = function(attributesJson){
+    $.each(attributesJson, function(id, attribute){
+        $('#attributes .draggableBox').append($("<li>").html(attribute.name).attr('rel',attribute.id).addClass('button dragDropElmAtt'));
     });
 };
     
