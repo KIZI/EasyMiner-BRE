@@ -17,7 +17,7 @@
                   </p>
               </div>
           </div>
-          <div class="ui-widget">
+          <div class="ui-widget dragDropLeft">
               <h3 class="ui-widget-header ui-state-focus ui-corner-top" data-i18n="bre-condition">Condition</h3>
               <form>
                   <div class="ui-widget-content ui-corner-bottom">
@@ -36,7 +36,7 @@
               </form>
           </div>
           <div class="newRow"></div>
-          <div class="ui-widget">
+          <div class="ui-widget dragDropLeft">
               <h3 class="ui-widget-header ui-state-focus ui-corner-top" data-i18n="bre-execute">Execute</h3>
               <form>
                   <div class="ui-widget-content ui-corner-bottom">
@@ -76,20 +76,20 @@
       </section>
       <nav id="navigation">
           <section class="attributesPalette" id="values">
-              <h2 class="minimize" data-i18n="bre-binsAndValues">Bins & values <a class="filter" href="#" title="Filter"></a></h2>
-              <div class="datas-filter">
+              <h2 class="minimize" data-i18n="bre-binsAndValues">Attribute values <a class="filter" href="#" title="Filter"></a></h2>
+              <!--<div class="datas-filter">
                   <input type="text" id="attributes-filter" title="Input part of requested attribute name - special characters * and ? are supported.">
                   <a href="#" class="reset-filter" title="Reset filter"></a>
-              </div>
+              </div>-->
               <div class="clearfix">
                   <div class="scrollable">
-                      <h3 data-i18n="bre-head-bins">Bins</h3>
+                      <h3 data-i18n="bre-head-bins" class="draggableBinsHeading">Bins</h3>
                       <ul class="draggableBox draggableBins">
                           <li class="draggableBoxInfo" data-i18n="bre-binsAndValues-defaultText"></li>
                       </ul>
-                      <h3 data-i18n="bre-head-values">Values</h3>
+                      <!--<h3 data-i18n="bre-head-values">Values</h3>
                       <ul class="draggableBox draggableVals">
-                      </ul>
+                      </ul>-->
                   </div>
                 <!--
               <form>

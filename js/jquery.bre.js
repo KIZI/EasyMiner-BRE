@@ -1,9 +1,9 @@
 var actRule,        // actual Rule, which is edited
-    attJson = {},   // JSON of all metaattributes in knowledge base
-    binJson = {},   // JSON of all bins in knowledge base
+    dataJson = {},  // JSON of data of attributes
+    binJson = {},   // JSON of all bins in knowledge base //TODO remove?
     edited = false, // boolean if the rule was changed or not
-    forJson = {},   // JSON of formats
-    changedFormats = [],    // array of changed Formats
+    forJson = {},   // JSON of formats //TODO remove?
+    changedFormats = [],    // array of changed Formats //TODO remove?
     rels = [];      // relations - used mainly in Autocomplete version
 
 var init = function(){
@@ -57,6 +57,7 @@ ruleToHtml = function(id) {
         $attributes.each(function(){
             if(typeof forJson[$(this).attr('attribute')] == 'undefined'){
                 $.ajax({
+                    //TODO načítání atributu
                     url: config.getAttributeUrl($(this).attr('attribute'), rulesetId),
                     dataType: "xml",
                     async: false,
@@ -256,11 +257,13 @@ $('#saveRule').click(function(){
         data: { data: ruleXml },
         dataType: "xml",
         success: function(response){
+            //TODO uložení pravidla
             if(changedFormats.length > 0){
                 $(changedFormats).each(function(){
                     forJson[this] = undefined;
                     binJson[this] = undefined;
                     $.ajax({
+                        //TODO načítání atributu
                         url: config.getAttributeUrl(this, rulesetId),
                         dataType: "xml",
                         async: false,
@@ -417,7 +420,7 @@ var printRuleList = function(rulesetJson) {
      * Converts XML of format to String in form of JSON.
      * Save all rules as jStorage.
      */
-    $.fn.xmlToJsonFormat = function() {
+    $.fn.xmlToJsonFormat = function() {//TODO
         var Format;
         var attName = $(this).children('Name').text();
         var attId = $(this).attr('id');

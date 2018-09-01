@@ -87,6 +87,7 @@
     * @param {number} i index of elm in array of jQuery objects
     */
     $.fn.getAttribute = function(i){
+        //TODO
 //        alert('called getAttribute');
         var forRel = $(this[i]).attr('rel'),
             att = forJson[forRel],
@@ -415,12 +416,12 @@ applyConfig = function(){
                     $operator.css('clear', 'left');
                     newRow = false;
                 }
-                $('.draggableBoxRel').css({visibility:'visible'});
-                //XXX Standa: původní varianta: $('.draggableBoxRel').append($operator)
+                //$('.draggableBoxRel').css({visibility:'visible'});//XXX standa původně přidáno
+                $('.draggableBoxRel').append($operator)
             }
         }
     });
-    $('.draggableBoxRel').show();//XXX Standa: tato řádka byla přidána
+    //$('.draggableBoxRel').show();//XXX Standa: tato řádka byla přidána
     if(config['init-brackets']){
         $('.dragDropBox').append('<li class="button noSortable dragDropBoxEnd">)</li>\n\
             <li class="button noSortable">(</li>');
@@ -543,7 +544,7 @@ insertOperatorThan = function($item){
             showSmallError($.i18n._('bre-validation-noAttrForThan', $item.attr('rel')), null);
         }
     }
-}
+};
 
 /**
  * Checks if value is in interval. Recursive.
@@ -584,31 +585,26 @@ isValueInInterval = function(interval, val){
 */
 var printAttributes = function(attributesJson){
     $.each(attributesJson, function(id, attribute){
-        $('#attributes .draggableBox').append($("<li>").html(attribute.name).attr('rel',attribute.id).addClass('button dragDropElmAtt'));
+        $('#attributes .draggableBox').append($("<li>").html(attribute.name).attr('rel','attribute:'+attribute.id).addClass('button dragDropElmAtt'));
     });
 };
     
 /** 
 * Insert button elements into the box of values.
-* @param {String} rel id of format
+* @param {String} rel id of attribute
 */
 processValues = function(rel){
     // function process() could be called in different cases
-    var process = function(format){
-        var form = forJson[format],
-            bins = binJson[format],
-            type = Object.getOwnPropertyNames(form.range);
+    var process = function(rel){
+        var attribute=dataJson[rel];
         $('#values .draggableBox li').remove();
-        $.each(bins, function(key, data){
-            var $li = $("<li>").html(data.name).attr('rel',key).addClass('button dragDropElmBin');
-            if(type == 'Value'){
-                $li.attr('title',data.vals);
-            } else if(type == 'Interval'){
-                $li.attr('title',$(data.vals).printInterval());
-            }
+        $('#values .draggableBinsHeading').text(attribute.name);
+        $.each(attribute.bins, function(key,bin){
+            var $li = $("<li>").html(bin).attr('rel','bin:'+bin).addClass('button dragDropElmBin');
             $('#values .draggableBins').append($li);
         });
 
+        /* TODO co dělá tohle?
         var $prev = $('#values .draggableVals').prev();
         $prev.show();
         if(type == 'Value'){
@@ -619,23 +615,34 @@ processValues = function(rel){
         }
         else{
             $prev.hide();
-        }
+        }*/
         $('#values .draggableSearchReset').click();
     };
-    if(typeof forJson[rel] == 'undefined'){
-        $.ajax({
-            url: config.getAttributeUrl(rel, rulesetId),
-            dataType: "xml",
-            success: function(xml){
-                $(xml).find('Attribute').xmlToJsonFormat();
-                var newRel = $(xml).find('Attribute').attr('id');
-                process(newRel);
-            }
-        });
-    }
-    else{
+
+    if(typeof dataJson[rel] == 'undefined'){
+        if (rel.substr(0,10)=='attribute:'){
+            var attributeId=rel.substr(10);
+            $.ajax({
+                url: config.getAttributeUrl(attributeId),
+                dataType: "json",
+                success: function(json){
+                    processAttributeDetailsJson(json);
+                    process(rel);
+                }
+            });
+        }
+    }else{
         process(rel);
     }
+};
+
+/**
+ * Process attribute details JSON loaded from server
+ * @param data
+ */
+var processAttributeDetailsJson = function(data){
+    dataJson['attribute:'+data.id]=data;
+    //TODO seřazení hodnot?
 };
 
 /**
@@ -758,15 +765,15 @@ $(document).on('click', '.dragDropBox .button:not(.noSortable)', function (e) {
     $('.dragDropBox').find('.ui-selected').removeClass('ui-selected');
     $(this).addClass('ui-selected');
     if($(this).hasClass('dragDropElmAtt')){
-        var format = $(this).attr('rel');
-        processValues(format);
+        var attributeId = $(this).attr('rel');
+        processValues(attributeId);
         
-    }
-    else if($(this).hasClass('dragDropElmBin')){
+    }else if($(this).hasClass('dragDropElmBin')){
         var valId = $(this).attr('rel');
         if($('#values .draggableBox').find("li[rel='"+valId+"']").length == 0){
-            var format = binToFormat(valId);
-            processValues(format);
+            //TODO
+            var attributeId = binToFormat(valId);
+            processValues(attributeId);
         }
     }
     $('input:focus').blur();
@@ -796,7 +803,7 @@ $(document).keydown(function(e){
             $(document).trigger("mouseup");
         }
     }
-}) 
+});
 
 /*
  * Context menu for buttons in condition and execute.
@@ -856,7 +863,7 @@ $(document).contextmenu({
 }).on('dblclick', '.dragDropBox .button:not(.noSortable)', function(e){
     $(document).contextmenu("open", $(this))
 }).on('dblclick', '.draggableBox .button', function(e){
-    var $newElm = $(this).clone()
+    var $newElm = $(this).clone();
     if($('.ui-selected').length > 0){
         var $selected = $('.ui-selected');
         $selected.after($newElm);
@@ -914,7 +921,12 @@ $(".dragDropBox").sortable({
     }
 });
 
-$(".dragDropLeft form").mouseover(function(){
-    $('.draggableBoxRel.visible').removeClass('visible');
-    $(this).find('.draggableBoxRel').addClass('visible');
+$(".dragDropLeft form").each(function(){
+    $(this).mouseover(function(){
+        $('.draggableBoxRel.visible').removeClass('visible');
+        $(this).find('.draggableBoxRel').addClass('visible');
+    });
+    $(this).mouseout(function(){
+        $(this).find('.draggableBoxRel').removeClass('visible');
+    })
 });
