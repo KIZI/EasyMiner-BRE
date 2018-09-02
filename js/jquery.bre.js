@@ -51,28 +51,30 @@ ruleToHtml = function(id) {
     emptyConExe();
     getRule(id, function(){
         actRule = id;
-        var ruleJson = $.parseXML($.jStorage.get("rule-"+id));
-        var $attributes = $(ruleJson).find('RuleAttribute');
-        var i = 0;
-        $attributes.each(function(){
-            if(typeof forJson[$(this).attr('attribute')] == 'undefined'){
+        var ruleXml = $.parseXML($.jStorage.get("rule-"+id));
+        var ruleAttributes = $(ruleXml).find('RuleAttribute');
+        ruleAttributes.each(function(){
+            var ruleAttribute=$(this);
+            var attributeId=ruleAttribute.attr('attribute');
+            //region načtení atributu, pokud ještě není známý
+            if(typeof dataJson['attribute:'+attributeId] == 'undefined'){
                 $.ajax({
-                    //TODO načítání atributu
-                    url: config.getAttributeUrl($(this).attr('attribute'), rulesetId),
-                    dataType: "xml",
+                    url: config.getAttributeUrl(attributeId),
+                    dataType: "json",
                     async: false,
-                    success: function(xml){
-                        i++;
-                        $(xml).find('Attribute').xmlToJsonFormat();
+                    success: function(json){
+                        processAttributeDetailsJson(json);
                     }
                 });
             }
+            //endregion načtení atributu, pokud ještě není známý
         });
-        var $Antecedent = $(ruleJson).find('Antecedent');
-        var $Consequent = $(ruleJson).find('Consequent');
+
+        var $Antecedent = $(ruleXml).find('Antecedent');
+        var $Consequent = $(ruleXml).find('Consequent');
         $($Antecedent[0]).rulePartToxHtml('Antecedent');
         $($Consequent[0]).rulePartToxHtml('Consequent');
-        var $rating = $(ruleJson).find('Rating');
+        var $rating = $(ruleXml).find('Rating');
         $("#confidence").val($rating.attr('confidence'));
         $("#support").val($rating.attr('support'));
         edited = false;
@@ -92,7 +94,7 @@ getRule = function(ruleId, callback) {
             url: config.getRuleUrl(ruleId, rulesetId),
             dataType: "xml",
             success: function(xml){
-                $(xml).find('Rule').storageRule(ruleId);
+                $(xml).storageRule(ruleId);
                 callback();
             }
         });

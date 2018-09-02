@@ -28,17 +28,24 @@
                 else{
                     elmAttrs.push(attributes.join(''));
                 }
-            }
-            else if($(this)[0].nodeName == 'RuleAttribute'){
-                var format = $(this).attr('attribute');
-                var elmCats = [];
-                var catsCount = parseInt($(this).children('ValuesBin').length);
-                if(typeof forJson[format] == 'undefined'){
+            }else if($(this)[0].nodeName == 'RuleAttribute'){//TODO vykreslování rule attributes
+                var attributeId = $(this).attr('attribute');
+                var elmBins = [];
+                var binsCount = parseInt($(this).children('ValuesBin,Value').length);
+                if(typeof dataJson['attribute:'+attributeId] == 'undefined'){
                     showError($.i18n._('bre-error-dataInconsistance'), null);
                 }
-                elmCats.push('<li class="button dragDropElmAtt" rel="'+
-                        format+'">'+forJson[format].name+'</li>');
-                elmCats.push('<li class="button dragDropElmRel" rel="is">is</li>');
+                elmBins.push('<li class="button dragDropElmAtt" rel="attribute:'+attributeId+'">'+dataJson['attribute:'+attributeId].name+'</li>');
+                elmBins.push('<li class="button dragDropElmRel" rel="is">is</li>');
+                $(this).children('ValuesBin,Value').each(function(){
+                    var value=$(this).text();
+                    elmBins.push('<li class="button dragDropElmBin" rel="bin:'+value+'">'+value+'</li>');
+                    if(i<(binsCount-1)){
+                        elmCats.push('<li class="button dragDropElmLog" rel="Disjunction">or</li>');
+                    }
+                });
+                //TODO...
+                /*TODO chybí vykreslení hodnot
                 $(this).children('ValuesBin').each(function(i, e){
                     if(typeof binJson[format][$(this).attr('id')] == 'undefined'){
                         showError($.i18n._('bre-error-dataInconsistance'), null);
@@ -50,17 +57,18 @@
                         elmCats.push('<li class="button dragDropElmLog" rel="Disjunction">or</li>');
                     }
                 });
-                if(elmCats.length>3){
+                */
+
+
+                if(elmBins.length>3){
                     if(attrsCount>1){
-                        elmAttrs.push(bracketLeft+elmCats.join('')+bracketRight);
-                    }
-                    else{
-                        elmAttrs.push(elmCats.join(''));
+                        elmAttrs.push(bracketLeft+elmBins.join('')+bracketRight);
+                    }else{
+                        elmAttrs.push(elmBins.join(''));
                         elmAttrs.push('');
                     }
-                }
-                else{
-                    elmAttrs.push(elmCats.join(''));
+                }else{
+                    elmAttrs.push(elmBins.join(''));
                 }
             }
             if(i<(attrsCount-1)){
@@ -809,6 +817,7 @@ $(document).keydown(function(e){
  * Context menu for buttons in condition and execute.
  * Source: https://plugins.jquery.com/ui-contextmenu/
  */
+/*TODO kontextové menu
 $(document).contextmenu({
     delegate: ".dragDropBox .button:not(.noSortable)",
     preventContextMenuForPopup: true,
@@ -876,7 +885,7 @@ $(document).contextmenu({
         $('.draggableBox.visible').siblings('.ui-widget-content')
                 .find('.dragDropBox').append($newElm).children().last().click();
     }
-});
+});*/
 
 $(".dragDropBox").sortable({
     cancel: ".noSortable",
