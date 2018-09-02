@@ -242,16 +242,21 @@ $('#newRule').click(function(){
     }
 });
 
-$('#saveRule').click(function(){
+$('#saveRule').click(function(){alert('save');//TODO
     var lastId;
     var ruleXml = '<Rule xmlns="'+config["rule-ns"]+'"';
     if(typeof actRule != 'undefined'){
         ruleXml += ' id="'+actRule+'"';
     }
-    ruleXml += '><Text>'+defRuleName()+'</Text><Antecedent>'+
+    ruleXml += '><Antecedent>'+
             $('#Antecedent').validateRule()+'</Antecedent><Consequent>'+
             $('#Consequent').validateRule()+'</Consequent><Rating confidence="'+
             $("#confidence").val()+'" support="'+$("#support").val()+'"/></Rule>';
+
+    console.log(ruleXml);
+    return;//TODO
+
+
 //    var $ruleXml = $.parseXML(ruleXml);
     $.ajax({
         type: 'POST',

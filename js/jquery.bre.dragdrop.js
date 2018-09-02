@@ -96,18 +96,17 @@
     */
     $.fn.getAttribute = function(i){
         //TODO
-//        alert('called getAttribute');
-        var forRel = $(this[i]).attr('rel'),
-            att = forJson[forRel],
-            attType = Object.getOwnPropertyNames(att.range),
-            binRel = $(this[i+2]).attr('rel'),
-            operatorIsThan = false,
-            categoryFull = '',
-            categoryFullId = 0;
+        var forRel = $(this[i]).attr('rel');
+        var attribute = dataJson[forRel];
+        var binRel= $(this[i+2]).attr('rel');
+        var operatorIsThan = false;
+        var categoryFullId = 0;
+
         if(!$(this[i+1]).hasClass('dragDropElmRel')){
             showError($.i18n._('bre-validation-shouldOpe'), this[i+1]);
         } else{
             if($(this[i+1]).attr('rel').indexOf('than')>0){
+                /*TODO aktuálně nepoužívané
                 operatorIsThan = true;
                 if(attType == "Interval"){
                     if(isValueInInterval(att.range.Interval, $(this[i+2]).text())){
@@ -159,14 +158,14 @@
                 } else{
                     showError($.i18n._('bre-validation-attrWithoutInterval', $(this[i]).text(), $(this[i+1]).attr('rel')), null);
                 }
+                */
             }
         }
         if($(this[i+2]).hasClass('dragDropElmBin')){
-            var binFormat = binToFormat(binRel);
-            if(binFormat !== forRel){
+            if (!binIsInAttribute(forRel,binRel)){
                 showError($.i18n._('bre-validation-cannotValToAttr', $(this[i]).text()), this[i+2]);
             }
-        } else if($(this[i+2]).hasClass('dragDropElmVal')){
+        } else if($(this[i+2]).hasClass('dragDropElmVal')){/*TODO aktuálně nepoužívané
             if(attType == "Interval" && !operatorIsThan){
                 showError($.i18n._('bre-validation-useBinOrChange'), this[i+2]);
             } else if(attType == "Value"){
@@ -185,25 +184,30 @@
                     }
                 }
             }
+            */
         } else{
             showError($.i18n._('bre-validation-shouldBin'), this[i+2]);
         }
-        if(categoryFull != ''){
-            var categories = categoryFull;
-        } else{
-            var categories = '<ValuesBin id="'+binRel+'" />';
+        var binName=binRel;
+        if (binName.substr(0,4)==='bin:'){
+            binName=binName.substr(4);
         }
+        var categories='<ValuesBin>'+$('<ValuesBin />').text(binName).text()+'</ValuesBin>';
         if($(this[i+3]).attr('rel') === 'Disjunction'){
+            //TODO disjunkce funguje jen pro 2 hodnoty, pro víc ne
             if($(this[i+4]).attr('rel') === forRel){
                 categories += $(this).getAttribute(i+4);
                 lastId += 4;
             } else if($(this[i+4]).hasClass('dragDropElmBin')){
-                var binFormat = binToFormat($(this[i+4]).attr('rel'));
-                if(binFormat !== forRel){
+                binRel=$(this[i+4]).attr('rel');
+                if (!binIsInAttribute(forRel,binRel)){
                     showError($.i18n._('bre-validation-cannotValToAttr', $(this[i]).text()), this[i+4]);
-                }
-                else{
-                    categories += '<ValuesBin id="'+$(this[i+4]).attr('rel')+'" />';
+                }else{
+                    binName=binRel;
+                    if (binName.substr(0,4)==='bin:'){
+                        binName=binName.substr(4);
+                    }
+                    categories+='<ValuesBin>'+$('<ValuesBin />').text(binName).text()+'</ValuesBin>';
                     lastId = 4;
                 }
             } else{
@@ -325,7 +329,11 @@
             } else{
                 if($(this[i]).hasClass('dragDropElmAtt')){
                     lastId = 0;
-                    var attribute = '<RuleAttribute attribute="'+thisRel+'">'+
+                    var attributeId=thisRel;
+                    if (attributeId.substr(0,10)=='attribute:'){
+                        attributeId=attributeId.substr(10);
+                    }
+                    var attribute = '<RuleAttribute attribute="'+attributeId+'">'+
                             $(this).getAttribute(i)+'</RuleAttribute>';
                     i += lastId;
                 } else if($(this[i-1]).hasClass('dragDropElmBin') || $(this[i-1]).hasClass('dragDropElmVal')){
@@ -343,13 +351,14 @@
     * Validates rule part to XML.
     */
     $.fn.validateRule = function(){
-        if($(".dragDropBox .button:not(.noSortable)", this).length < 3){
+        if($(".dragDropBox .button:not(.noSortable)", this).length<3 && $(this).attr('id')=='Consequent'){
             var part = ($(this).attr('id') == 'Antecedent') ? $.i18n._('bre-condition') : $.i18n._('bre-execute');
             showError($.i18n._('bre-validation-empty', part), null);
-        }
+        }//TODO pokračovat...
         $('.red', this).removeClass('red');
         var $bracketLeft = $(".dragDropBox .dragDropBracket:contains('('):not(.noSortable)", this);
         var $bracketRight = $(".dragDropBox .dragDropBracket:contains(')'):not(.noSortable)", this);
+
         $($bracketRight).each(function(){
             if($(this).next().text() === '('){
                 showError($.i18n._('bre-validation-shouldLog'), $(this).next());
@@ -358,12 +367,10 @@
         if($bracketLeft.length !== $bracketRight.length){
             if($bracketLeft.length > $bracketRight.length){
                 showError($.i18n._('bre-validation-lostBracketRight'), null);
-            }
-            else{
+            }else{
                 showError($.i18n._('bre-validation-lostBracketLeft'), null);
             }
-        }
-        else{
+        }else{
             $('.dragDropElmRel', this).each(function(){
                 var $this = $(this),
                     $next = $this.next(),
@@ -462,21 +469,22 @@ binToFormat = function(id){
     return result;
 };
 
-/** 
-* Defines rule name from filled boxes.
-* @return {String} rule name
-*/
-defRuleName = function(){
-    var antecedentLi = $('#Antecedent li:not(.noSortable)').map(function(i,n) {
-        return $(n).text();
-    }).get().join(' ');
-    var consequentLi = $('#Consequent li:not(.noSortable)').map(function(i,n) {
-        return $(n).text();
-    }).get().join(' ');
-    return antecedentLi+' &gt;:&lt; '+consequentLi;
+/**
+ * Checks if bin is defined in attribute data array
+ * @param {String} attribute
+ * @param {String} bin
+ */
+binIsInAttribute=function(attribute,bin){
+    if (bin.substr(0,4)==='bin:'){
+        bin=bin.substr(4);
+    }
+    if (attribute.substr(0,10)!=='attribute:'){
+        attribute='attribute:'+attribute;
+    }
+    return $.inArray(bin,attribute.bins);
 };
 
-/** 
+/**
 * Removes all elements from Antecedent and Consequent parts to show new rule instead.
 * Set actual rule variable to undefined.
 */
