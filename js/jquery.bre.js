@@ -143,47 +143,42 @@ $( window ).bind('beforeunload', function(){
 $( document ).on("click", ".linkRuleEdit", function(){
     ruleToHtml($(this).attr('rel'));
 }).on("click", ".ruleDelete", function(){
-    var $this = $(this),
-        $rule = $this.siblings('a');
-    if($rule.attr('rel') == actRule){
-        showSmallError($.i18n._('bre-rule-cantDelete'));
-    }
-    else{
-        Apprise($.i18n._('bre-apprise-delrule-question', $rule.text()), {
-            animation: 10,
-            buttons: {
-                confirm: {
-                    text: $.i18n._('bre-apprise-newrule-confirm'),
-                    id: 'delrule-confirm',
-                    action: function(e){
-                        $.ajax({
-                            url: config.getDeleteRuleUrl($rule.attr('rel'), rulesetId),
-                            dataType: "html",
-                            success: function(response){
-                                if(response == 'DELETED'){
-                                    showAlert($.i18n._('bre-rule-deleted'), 'success');
-                                }
-                                else{
-                                    showSmallError($.i18n._('bre-rule-undeleted'))
-                                }
-                                getRules();
+    var ruleId=$(this).attr('rel');
+    var ruleLink = $('#rule-'+ruleId+' a.linkRuleEdit');
+    Apprise($.i18n._('bre-apprise-delrule-question', ruleLink.text()), {
+        animation: 10,
+        buttons: {
+            confirm: {
+                text: $.i18n._('bre-apprise-newrule-confirm'),
+                id: 'delrule-confirm',
+                action: function(e){
+                    $.ajax({
+                        url: config.getRemoveRuleUrl(ruleId, rulesetId),
+                        dataType: "json",
+                        success: function(response){
+                            if(response.state == 'ok'){
+                                showAlert($.i18n._('bre-rule-deleted'), 'success');
                             }
-                        });
-                        Apprise('close');
-                    }
-                },
-                cancel: {
-                    text: $.i18n._('bre-apprise-newrule-cancel'),
-                    id: 'delrule-cancel',
-                    action: function(e){
-                        Apprise('close');
-                    }
+                            else{
+                                showSmallError($.i18n._('bre-rule-undeleted'))
+                            }
+                            getRules();
+                        }
+                    });
+                    Apprise('close');
                 }
             },
-            input: false,
-            opacity: '0.80'
-        });
-    }
+            cancel: {
+                text: $.i18n._('bre-apprise-newrule-cancel'),
+                id: 'delrule-cancel',
+                action: function(e){
+                    Apprise('close');
+                }
+            }
+        },
+        input: false,
+        opacity: '0.80'
+    });
 }).ajaxStart(function(){
     $('#infoBox').css('visibility', 'visible');
 }).ajaxStop(function() {
@@ -242,8 +237,9 @@ $('#newRule').click(function(){
     }
 });
 
-$('#saveRule').click(function(){alert('save');//TODO
+$('#saveRule').click(function(){
     var lastId;
+    //region sestavení XML zápisu pravidla
     var ruleXml = '<Rule xmlns="'+config["rule-ns"]+'"';
     if(typeof actRule != 'undefined'){
         ruleXml += ' id="'+actRule+'"';
@@ -252,25 +248,21 @@ $('#saveRule').click(function(){alert('save');//TODO
             $('#Antecedent').validateRule()+'</Antecedent><Consequent>'+
             $('#Consequent').validateRule()+'</Consequent><Rating confidence="'+
             $("#confidence").val()+'" support="'+$("#support").val()+'"/></Rule>';
+    //endregion sestavení XML zápisu pravidla
 
-    console.log(ruleXml);
-    return;//TODO
-
-
-//    var $ruleXml = $.parseXML(ruleXml);
+    //odeslání požadavku na uložení pravidla
     $.ajax({
         type: 'POST',
         url: config.getSaveRuleUrl(actRule, rulesetId),
-        data: { data: ruleXml },
+        data: { rule: ruleXml },
         dataType: "xml",
         success: function(response){
-            //TODO uložení pravidla
             if(changedFormats.length > 0){
+                /*TODO aktuálně nepoužívané
                 $(changedFormats).each(function(){
                     forJson[this] = undefined;
                     binJson[this] = undefined;
                     $.ajax({
-                        //TODO načítání atributu
                         url: config.getAttributeUrl(this, rulesetId),
                         dataType: "xml",
                         async: false,
@@ -280,6 +272,11 @@ $('#saveRule').click(function(){alert('save');//TODO
                     });
                 });
                 changedFormats = [];
+                */
+            }
+            if(typeof actRule != 'undefined'){
+                //smažeme dané pravidlo z localstorage (mohlo dojít ke změně jeho IDčka)
+                $.removeStoredRule(actRule);
             }
             emptyConExe();
             showAlert($.i18n._('bre-rule-saved'), 'success');
@@ -322,7 +319,9 @@ $('#cssTouch').click(function(){
 var printRuleList = function(rulesetJson) {
     $('#rules ul').empty();
     $.each(rulesetJson.rules,function(ruleId,rule){
-        $('#rules ul').append('<li><a href="#" title="'+$.i18n._('bre-editRule')+' '+rule.text+'" rel="'+rule.id+'" class="linkRuleEdit">'+rule.text+'</a><a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" class="ui-state-error ruleDelete"><span class="ui-icon ui-icon-cancel"/></li>');
+        $('#rules ul').append('<li id="rule-'+rule.id+'"><a href="#" title="'+$.i18n._('bre-editRule')+' '+rule.text+'" rel="'+rule.id+'" class="linkRuleEdit">'+rule.text+'</a>' +
+            '<span class="ruleActions"><a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" rel="'+rule.id+'" class="ruleDelete cancel">X</a></span>' +
+            '</li>');
         //TODO zobrazit hodnoty měr zajímavosti?
     });
 };
@@ -421,6 +420,14 @@ var printRuleList = function(rulesetJson) {
             xmlString = oSerializer.serializeToString(rule[0]);
         }
         $.jStorage.set("rule-"+ruleId, xmlString);
+    };
+
+    /**
+     * Removes rule from localStorage
+     * @param {String} ruleId rules unique ID
+     */
+    $.fn.removeStoredRule = function(ruleId){
+        $.jStorage.deleteKey("rule-"+ruleId);
     };
 
     /**
