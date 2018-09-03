@@ -58,6 +58,7 @@
     "bre-validation-badOperator": "This operator is not allowed",
     "bre-validation-badNegation": "Negation has to be before parentheses, which content should be negated",
     "bre-rule-saved": "Rule was successfully saved",
+    "bre-rule-unsaved": "Rule was successfully saved",
     "bre-rule-deleted": "Rule was successfully deleted",
     "bre-rule-undeleted": "Rule was unable to delete, try it again",
     "bre-rule-cantDelete": "You can't delete rule, which is being edited",

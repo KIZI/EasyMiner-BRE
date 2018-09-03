@@ -286,9 +286,8 @@ $('#saveRule').click(function(){
             $newRule.storageRule($($newRule).attr('id'));
         },
         error: function (xhr, ajaxOptions, thrownError) {
-            alert(xhr.status);
-            alert(ajaxOptions);
-            alert(thrownError);
+            console.error(thrownError);
+            showAlert($.i18n._('bre-rule-unsaved'), 'error');
        }
     });
 }).button({
