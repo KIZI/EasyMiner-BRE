@@ -254,7 +254,7 @@ $('#saveRule').click(function(){
     $.ajax({
         type: 'POST',
         url: config.getSaveRuleUrl(actRule, rulesetId),
-        data: { rule: ruleXml },
+        data: ruleXml,
         dataType: "xml",
         success: function(response){
             if(changedFormats.length > 0){
@@ -277,6 +277,7 @@ $('#saveRule').click(function(){
             if(typeof actRule != 'undefined'){
                 //smažeme dané pravidlo z localstorage (mohlo dojít ke změně jeho IDčka)
                 $.removeStoredRule(actRule);
+                actRule=null;
             }
             emptyConExe();
             showAlert($.i18n._('bre-rule-saved'), 'success');
@@ -426,15 +427,15 @@ var printRuleList = function(rulesetJson) {
      * Removes rule from localStorage
      * @param {String} ruleId rules unique ID
      */
-    $.fn.removeStoredRule = function(ruleId){
+    $.removeStoredRule = function(ruleId){
         $.jStorage.deleteKey("rule-"+ruleId);
     };
 
-    /**
+    /** TODO nepoužíváno
      * Converts XML of format to String in form of JSON.
      * Save all rules as jStorage.
-     */
-    $.fn.xmlToJsonFormat = function() {//TODO
+     *
+    $.fn.xmlToJsonFormat = function() {
         var Format;
         var attName = $(this).children('Name').text();
         var attId = $(this).attr('id');
@@ -466,7 +467,7 @@ var printRuleList = function(rulesetJson) {
         });
         Format = '{"name": "'+$(this).children('Name').text()+'", "range": {"'+rangeType+'": ['+range+']}}';
         forJson[$(this).attr('id')] = $.parseJSON(Format);
-    };
+    };*/
 
     init();
 })(jQuery);
