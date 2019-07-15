@@ -296,6 +296,14 @@ $('#saveRule').click(function(){
     }
 });
 
+if (scorerUrl){
+  $('#evaluateModel').click(function(){
+    window.open(scorerUrl,'evaluateModel');
+  });
+  $('#evaluateModel').removeClass('hidden');
+}
+
+
 /*
 $('#cssTouch').click(function(){
     if($('head link[href="css/styleTouch.css"]').length > 0){

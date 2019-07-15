@@ -17,6 +17,7 @@
     "bre-button-resetServer": "Reset test server",
     "bre-button-saveRule": "Save rule",
     "bre-button-closeRule": "Close rule without saving",
+    "bre-button-evaluateModel": "Evaluate model",
     "bre-button-touchCssEnable": "Switch to styles for touch screens",
     "bre-button-touchCssDisable": "Switch back to normal styles",
     "bre-metaattributes": "Attributes",

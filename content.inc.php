@@ -1,4 +1,4 @@
-  <div id="wrapper">
+  <div id="wrapper" class="bre">
       <section id="workplace">
       <section id="content">
           <div id="infoBox" class="ui-widget">
@@ -71,7 +71,11 @@
               <div class="ui-widget-content ui-corner-bottom">
                   <ul></ul>
               </div>
+              <div class="fr">
+                <button id="evaluateModel" class="hidden"><span data-i18n="bre-button-evaluateModel">Evaluate model</span></button>
+              </div>
           </div>
+
       </section>
       </section>
       <nav id="navigation">
