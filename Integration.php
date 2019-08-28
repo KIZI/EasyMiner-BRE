@@ -27,7 +27,7 @@ class Integration {
    */
   public static $cssFiles = [
     '../_miningUI/css/index.css',
-    'css/style.css',
+    'css/index.css',
     'css/jquery.apprise-v2.css'
   ];
 

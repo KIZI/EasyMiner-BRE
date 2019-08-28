@@ -1,18 +1,26 @@
-/* Author: PVD */
+.fl
+  float: left;
 
-*{  }
-.fl{ float: left; }
-.fr{ float: right; }
-.red{ border: red 1px solid !important; }
-.newRow{ clear: both; }
-.hidden{ display: none; }
-.visible{ visibility: visible !important; }
+.fr
+  float: right;
+.red
+  border: red 1px solid !important;
+.newRow
+  clear: both;
+.hidden
+  display: none;
 
+.visible
+  visibility: visible !important;
+/*
 body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
+*/
+#content
+  width: 960px;
+  margin: 0 auto;
 
-#content{ width: 960px; margin: 0 auto; }
-
-#alertBox{ opacity: 0; }
+#alertBox
+  opacity: 0;
 
 /* style modifications for jQuery Widget
 .ui-widget{ margin: .5em 0; }
@@ -30,7 +38,8 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 
 
 
-.ui-menu{width: 140px; }
+.ui-menu
+  width: 140px;
 
 /* original style with arrow for jQuery Tooltip */
 .ui-tooltip, .arrow:after{ background: #e14f1c !important; border: 2px solid white !important; }
@@ -58,10 +67,10 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 .autocompleteBox .autocompleteBoxElmAtt{ color: green; background-color: #F0F0F0; }
 .autocompleteBox .autocompleteBoxElmLog{ color: red; background-color: #F0F0F0; }
 .autocompleteBox .autocompleteBoxElmVal{ color: blue; background-color: #F0F0F0; }
-                 .autocompleteBoxElm input{ float: left; width: 10px; font-size: 14px; border: none; }
+.autocompleteBoxElm input{ float: left; width: 10px; font-size: 14px; border: none; }
 
 .autocompleteBox .autocompleteBoxInp{  }
-                 .autocompleteBoxInp div{ float: left; width: 10px; height: 18px; text-align: center; }
+.autocompleteBoxInp div{ float: left; width: 10px; height: 18px; text-align: center; }
 .autocompleteBox .autocompleteBoxEnd{ position: absolute; right: 5px; bottom: 0; }
 
 /* Drag&Drop styles */
@@ -83,11 +92,11 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 
 /* draggable Button styles*/
 .button{ display: block; padding: 5px 10px; border: #cacaca 1px solid; background-color: #F0F0F0;
-   -ms-user-select: none; /* IE 10+ */
-   -moz-user-select: -moz-none;
-   -khtml-user-select: none;
-   -webkit-user-select: none;
-   user-select: none; }
+  -ms-user-select: none; /* IE 10+ */
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none; }
 .button.toRemove{ cursor: not-allowed !important; }
 .button.moving{ cursor: move; }
 
@@ -108,9 +117,4 @@ label{ font-size: 1.1em; }
 .draggableBoxRel .button{ /*float: left; */margin: 5px; overflow: hidden; }
 .draggableSearchReset{ float: right; }
 
-#rules li{ line-height: 26px; }
-#rules li:hover{ background-color: #fafafa; }
-.ruleDelete{ float: right; border-radius: 4px; }
-
-/*.ui-widget{ padding: 5px; list-style-type: none; border: 1px dotted; border-top: none; background-color: #fff; min-width: 140px !important; }
-.ui-icon-carat-1-e{ position: absolute; top: 20px !important; width: 5px; height: 24px; background: url(../images/arrow.gif) right 8px no-repeat; }*/
+@import "_rules-list.styl"

@@ -328,12 +328,26 @@ $('#cssTouch').click(function(){
  * Prints rule list to UI.
  */
 var printRuleList = function(rulesetJson) {
-    $('#rules ul').empty();
+    var rulesUl=$('#rules-list');
+    rulesUl.empty();
     $.each(rulesetJson.rules,function(ruleId,rule){
-        $('#rules ul').append('<li id="rule-'+rule.id+'"><a href="#" title="'+$.i18n._('bre-editRule')+' '+rule.text+'" rel="'+rule.id+'" class="linkRuleEdit">'+rule.text+'</a>' +
-            '<span class="ruleActions"><a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" rel="'+rule.id+'" class="ruleDelete cancel">X</a></span>' +
-            '</li>');
-        //TODO zobrazit hodnoty měr zajímavosti?
+
+        var ruleA = $('<a href="#" class="linkRuleEdit"></a>');
+        ruleA.attr('rel',rule.id);
+        ruleA.attr('title',$.i18n._('bre-editRule')+' '+rule.text);
+        ruleA.text(rule.text);
+
+        var ruleLi=$('<li class="rule"></li>');
+        ruleLi.attr('id','rule-'+rule.id);
+        ruleLi.html(ruleA);
+
+        ruleLi.append('<span class="ruleActions">' +
+                        '<a href="#" title="'+$.i18n._('bre-editRule')+'" rel="'+rule.id+'" class="edit linkRuleEdit"></a>' +
+                        '<a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" rel="'+rule.id+'" class="delete"></a>' +
+                      '</span>');
+        ruleLi.append('<span class="ims"><span>Confidence: <span class="value">'+(Math.round(rule.confidence*1000)/1000)+'</span></span><span>Support: <span class="value">'+(Math.round(rule.support*1000)/1000)+'</span></span>');
+
+        rulesUl.append(ruleLi);
     });
 };
 

@@ -1,0 +1,123 @@
+backgroundColor = #EDEDED
+baseFontSize = 16px
+actionLinkFontSize = 14px
+unimportantTextColor = #888
+interestMeasureValueColor = #7B0D2E
+interestMeasureColor = unimportantTextColor
+
+taskActionLink()
+  padding-left 24px
+  height 20px
+  padding-top 2px
+  margin 0 5px
+  font-size actionLinkFontSize
+  display inline-block
+
+ruleIMs()
+  font-size 0.8*baseFontSize
+  color interestMeasureColor
+  *
+    -moz-user-select text
+    -ms-user-select text
+    -webkit-user-select text
+  >span
+    border-right 1px solid backgroundColor
+    display inline-block
+    padding-right 5px
+    margin-right 5px
+    &:last-child
+      border-right none
+
+    .value
+      color interestMeasureValueColor
+
+ruleActions()
+  display inline-block
+  overflow auto
+  position relative
+  width 100px
+  height 20px
+  margin-left 15px
+  background transparent
+  > a
+    ruleActionsLink()
+    display block
+    width 20px
+    height 20px
+    float left
+    margin-right 5px
+    visibility hidden
+
+ul#rules-list
+  padding-left 0
+  li
+    margin 0 0 5px 0
+    padding 0 0 5px 20px
+    list-style none
+    cursor default
+    position relative
+    border-bottom  1px solid backgroundColor
+
+    input.found-rule-checkbox
+      position absolute
+      left 0
+      top 8px
+
+    .rule
+      color foundRuleColor
+      cursor default
+      -moz-user-select text
+      -ms-user-select text
+      -webkit-user-select text
+
+    .loading
+      display none
+
+    .ruleActions
+      ruleActions()
+      top 5px
+
+      a.mark
+        background transparent url('../images/icon-ok-20.png') left center no-repeat
+
+      a.unmark
+        background transparent url('../images/icon-ok-20.png') left center no-repeat
+        &:hover
+          background transparent url('../images/icon-stop-20.png') left center no-repeat
+
+      a.edit
+        background transparent url('../images/icon-edit.png') left center no-repeat
+
+      a.delete
+        background transparent url('../images/icon-stop-20.png') left center no-repeat
+
+    .ims
+      display block
+      ruleIMs()
+
+    &.loading
+      .ruleActions
+        background transparent url('../images/icon-loading-bw-20.gif') left center no-repeat
+        >a
+          visibility hidden !important
+
+    &:hover
+      .ruleActions
+        >a
+          visibility visible
+
+
+/*TODO
+
+
+
+#rules-list
+  li
+    line-height: 26px;
+    &:hover
+      background-color: #fafafa;
+
+    .ruleDelete
+      float: right;
+      border-radius: 4px
+      color:red*/

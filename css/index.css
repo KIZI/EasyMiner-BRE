@@ -1,0 +1,379 @@
+.fl {
+  float: left;
+}
+.fr {
+  float: right;
+}
+.red {
+  border: #f00 1px solid !important;
+}
+.newRow {
+  clear: both;
+}
+.hidden {
+  display: none;
+}
+.visible {
+  visibility: visible !important;
+}
+/*
+body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
+*/
+#content {
+  width: 960px;
+  margin: 0 auto;
+}
+#alertBox {
+  opacity: 0;
+}
+/* style modifications for jQuery Widget
+.ui-widget{ margin: .5em 0; }
+.ui-widget p{ margin: .5em 0; overflow: hidden; }
+.ui-widget .ui-corner-all{ padding: 4px; }
+.ui-widget.error .ui-corner-all{ border:1px solid #c20000;background:#cd0a0a url("images/ui-bg_highlight-hard_45_cd0a0a_1x100.png") 50% top repeat-x;color:#fff; }
+.ui-widget.error .ui-icon{ background-image: url("images/ui-icons_fff_256x240.png"); background-position:0 -144px; }
+.ui-widget.success .ui-corner-all{ border: 1px solid #5CB85C; background-color: #DFF0D8; color: #5CB85C; }
+.ui-widget.success .ui-icon{ background-image: url("images/ui-icons_5CB85C_256x240.png"); background-position:-64px -144px }
+.ui-widget .ui-widget-header{ margin: 0; padding: 2px 5px; font-weight: bold; }
+.ui-widget .ui-widget-content{ overflow: hidden; padding: 2px 5px; }
+.ui-widget .ui-widget-content-active{ border-color: #ACDD4A; }
+.ui-widget fieldset{ border: none; padding: 0; }
+.ui-widget fieldset legend{ display: none; }*/
+.ui-menu {
+  width: 140px;
+}
+/* original style with arrow for jQuery Tooltip */
+.ui-tooltip,
+.arrow:after {
+  background: #e14f1c !important;
+  border: 2px solid #fff !important;
+}
+.ui-tooltip {
+  font-weight: bold;
+  font-size: 1.1em;
+  box-shadow: 0 0 7px #000;
+}
+.arrow {
+  width: 70px;
+  height: 10px;
+  overflow: hidden;
+  position: absolute;
+  left: 50%;
+  margin-left: -25px;
+  bottom: -10px;
+}
+.arrow:after {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: -18px;
+  width: 20px;
+  height: 20px;
+  box-shadow: 6px 5px 9px -9px #000;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  tranform: rotate(45deg);
+}
+.autocompleteBox {
+  position: relative;
+  width: 800px;
+  list-style-type: none;
+  padding: 0;
+  overflow: hidden;
+}
+.autocompleteBox .autocompleteBoxElm {
+  display: block;
+  float: left;
+}
+/*.autocompleteBox .autocompleteBoxElm:hover{ border-bottom: 1px dashed; }
+                 .autocompleteBoxElm ul,*/
+/*.ui-state-focus{ background-color: #DADADA }*/
+.ui-autocomplete {
+  display: none;
+  padding: 5px;
+  list-style-type: none;
+  border: 1px dotted;
+  border-top: none;
+  background-color: #fff;
+  overflow: hidden;
+  min-width: 140px !important;
+}
+.ui-autocomplete-category {
+  font-weight: bold;
+  padding: 0.2em 0.4em;
+  margin: 0.8em 0 0.2em;
+  line-height: 1.5;
+}
+.ui-autocomplete-category-log {
+  position: relative !important;
+  display: block !important;
+  height: 22px;
+  background-color: #fff;
+}
+.ui-autocomplete-category-log li {
+  display: block;
+  width: 20px !important;
+  float: left;
+}
+.ui-autocomplete-category-log li a {
+  width: 15px;
+}
+.autocompleteBox .autocompleteBoxElmAct ul {
+  display: block;
+}
+.autocompleteBox .autocompleteBoxElmAct input:hover {
+  border-bottom: none;
+}
+.autocompleteBox .autocompleteBoxElmAtt:hover,
+.autocompleteBox .autocompleteBoxElmLog:hover,
+.autocompleteBox .autocompleteBoxElmVal:hover {
+  cursor: pointer;
+  border-bottom: 1px dashed;
+}
+.autocompleteBox .autocompleteBoxElmAtt {
+  color: #008000;
+  background-color: #f0f0f0;
+}
+.autocompleteBox .autocompleteBoxElmLog {
+  color: #f00;
+  background-color: #f0f0f0;
+}
+.autocompleteBox .autocompleteBoxElmVal {
+  color: #00f;
+  background-color: #f0f0f0;
+}
+.autocompleteBoxElm input {
+  float: left;
+  width: 10px;
+  font-size: 14px;
+  border: none;
+}
+.autocompleteBoxInp div {
+  float: left;
+  width: 10px;
+  height: 18px;
+  text-align: center;
+}
+.autocompleteBox .autocompleteBoxEnd {
+  position: absolute;
+  right: 5px;
+  bottom: 0;
+}
+/* Drag&Drop styles */
+#content {
+  overflow: hidden;
+}
+#content form {
+  overflow: hidden;
+  padding-bottom: 10px;
+}
+.dragDropBox {
+  position: relative;
+  width: 680px;
+  min-height: 35px;
+  padding: 0 30px 0 0;
+  list-style-type: none;
+}
+.dragDropBox li {
+  display: inline-table;
+  margin: 2px;
+}
+.dragDropElmAtt {
+  color: #008000;
+}
+.dragDropElmRel {
+  color: #f00;
+}
+.dragDropElmBin {
+  color: #00f;
+}
+.dragDropElmVal {
+  color: #8a2be2;
+}
+.dragDropBox .dragDropElmLog {
+  margin: 2px 5px;
+}
+.dragDropBox .dragDropBoxEnd {
+  position: absolute;
+  right: 5px;
+  bottom: 0;
+}
+.dragDropBox .noSortable {
+  background: none;
+  border-color: #fff;
+}
+.dragDropBox .ui-selected {
+  background-color: #cacaca;
+}
+.dragDropBox .button {
+  cursor: default;
+}
+/* draggable Button styles*/
+.button {
+  display: block;
+  padding: 5px 10px;
+  border: #cacaca 1px solid;
+  background-color: #f0f0f0;
+  -ms-user-select: none; /* IE 10+ */
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.button.toRemove {
+  cursor: not-allowed !important;
+}
+.button.moving {
+  cursor: move;
+}
+/*#confidence,#support{ width: 50px; margin-right: 40px; }*/
+.ui-spinner {
+  width: 80px;
+  margin-right: 20px;
+}
+.ui-spinner input {
+  width: 50px;
+}
+label {
+  font-size: 1.1em;
+}
+.draggableBox {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.draggableBox .button {
+  float: left;
+  cursor: move;
+}
+.draggableBox .draggableBoxInfo {
+  width: 150px;
+}
+#navigation div.scrollable {
+  margin-top: 5px;
+  height: 235px;
+  overflow-y: auto;
+}
+#navigation div.scrollable h3 {
+  clear: both;
+  margin: 5px 0 2px;
+}
+#navigation .draggableBox .button {
+  margin: 1px 0;
+  clear: left;
+}
+#navigation input {
+  width: 150px;
+  margin-right: 2px;
+  padding: 3px 4px;
+}
+.draggablePlace {
+  display: block;
+  padding: 5px 10px;
+  text-align: center;
+  border: #cacaca 1px dotted;
+}
+.draggableBoxRel {
+  visibility: hidden;
+  clear: left;
+}
+.draggableBoxRel .button {
+/*float: left; */
+  margin: 5px;
+  overflow: hidden;
+}
+.draggableSearchReset {
+  float: right;
+}
+ul#rules-list {
+  padding-left: 0;
+}
+ul#rules-list li {
+  margin: 0 0 5px 0;
+  padding: 0 0 5px 20px;
+  list-style: none;
+  cursor: default;
+  position: relative;
+  border-bottom: 1px solid #ededed;
+}
+ul#rules-list li input.found-rule-checkbox {
+  position: absolute;
+  left: 0;
+  top: 8px;
+}
+ul#rules-list li .rule {
+  color: foundRuleColor;
+  cursor: default;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -webkit-user-select: text;
+}
+ul#rules-list li .loading {
+  display: none;
+}
+ul#rules-list li .ruleActions {
+  display: inline-block;
+  overflow: auto;
+  position: relative;
+  width: 100px;
+  height: 20px;
+  margin-left: 15px;
+  background: transparent;
+  top: 5px;
+}
+ul#rules-list li .ruleActions > a {
+  display: block;
+  width: 20px;
+  height: 20px;
+  float: left;
+  margin-right: 5px;
+  visibility: hidden;
+}
+ul#rules-list li .ruleActions a.mark {
+  background: transparent url("../images/icon-ok-20.png") left center no-repeat;
+}
+ul#rules-list li .ruleActions a.unmark {
+  background: transparent url("../images/icon-ok-20.png") left center no-repeat;
+}
+ul#rules-list li .ruleActions a.unmark:hover {
+  background: transparent url("../images/icon-stop-20.png") left center no-repeat;
+}
+ul#rules-list li .ruleActions a.edit {
+  background: transparent url("../images/icon-edit.png") left center no-repeat;
+}
+ul#rules-list li .ruleActions a.delete {
+  background: transparent url("../images/icon-stop-20.png") left center no-repeat;
+}
+ul#rules-list li .ims {
+  display: block;
+  font-size: 12.8px;
+  color: #888;
+}
+ul#rules-list li .ims * {
+  -moz-user-select: text;
+  -ms-user-select: text;
+  -webkit-user-select: text;
+}
+ul#rules-list li .ims >span {
+  border-right: 1px solid #ededed;
+  display: inline-block;
+  padding-right: 5px;
+  margin-right: 5px;
+}
+ul#rules-list li .ims >span:last-child {
+  border-right: none;
+}
+ul#rules-list li .ims >span .value {
+  color: #7b0d2e;
+}
+ul#rules-list li.loading .ruleActions {
+  background: transparent url("../images/icon-loading-bw-20.gif") left center no-repeat;
+}
+ul#rules-list li.loading .ruleActions >a {
+  visibility: hidden !important;
+}
+ul#rules-list li:hover .ruleActions >a {
+  visibility: visible;
+}

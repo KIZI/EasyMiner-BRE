@@ -69,7 +69,7 @@
           <div id="rules" class="ui-widget">
               <h3 class="ui-widget-header ui-state-default ui-corner-top" data-i18n="bre-head-rulesEdit">Rules to edit</h3>
               <div class="ui-widget-content ui-corner-bottom">
-                  <ul></ul>
+                  <ul id="rules-list"></ul>
               </div>
               <div class="fr">
                 <button id="evaluateModel" class="hidden"><span data-i18n="bre-button-evaluateModel">Evaluate model</span></button>
