@@ -353,7 +353,7 @@
     $.fn.validateRule = function(){
         if($(".dragDropBox .button:not(.noSortable)", this).length<3 && $(this).attr('id')=='Consequent'){
             var part = ($(this).attr('id') == 'Antecedent') ? $.i18n._('bre-condition') : $.i18n._('bre-execute');
-            showError($.i18n._('bre-validation-empty', part), null);
+            showError($.i18n._('bre-validation-empty', part), null);//TODO chyba není v boxu
         }//TODO pokračovat...
         $('.red', this).removeClass('red');
         var $bracketLeft = $(".dragDropBox .dragDropBracket:contains('('):not(.noSortable)", this);
