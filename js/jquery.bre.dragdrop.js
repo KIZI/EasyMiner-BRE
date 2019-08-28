@@ -285,6 +285,7 @@
     */
     $.fn.validateCedent = function(fromI){
         var attrs = [],
+            ruleAttributesCount = 0,
             connective,
             negation = false;
         for(var i=fromI;i<this.length;i++){
@@ -308,6 +309,7 @@
                 i += parseInt(cedent.length)+1;
                 var subAttrs = $(cedent).validateCedent(0),
                     subAtt = subAttrs[0];
+                ruleAttributesCount+=subAttrs[2];
                 if(subAttrs[0].match(/Attribute/g).length>2){
                     subAtt = '<Cedent connective="'+subAttrs[1]+'">'+
                         subAtt+'</Cedent>';
@@ -336,6 +338,7 @@
                     var attribute = '<RuleAttribute attribute="'+attributeId+'">'+
                             $(this).getAttribute(i)+'</RuleAttribute>';
                     i += lastId;
+                    ruleAttributesCount++;
                 } else if($(this[i-1]).hasClass('dragDropElmBin') || $(this[i-1]).hasClass('dragDropElmVal')){
                     showError($.i18n._('bre-validation-shouldLog'), this[i]);
                 } else{
@@ -344,13 +347,14 @@
                 attrs.push(attribute);
             }
         }
-        return [attrs.join(''), connective];
+        return [attrs.join(''), connective, ruleAttributesCount];
     };
 
     /** 
     * Validates rule part to XML.
     */
     $.fn.validateRule = function(){
+        var ruleAttributesCount=0;
         if($(".dragDropBox .button:not(.noSortable)", this).length<3 && $(this).attr('id')=='Consequent'){
             var part = ($(this).attr('id') == 'Antecedent') ? $.i18n._('bre-condition') : $.i18n._('bre-execute');
             showError($.i18n._('bre-validation-empty', part), null);//TODO chyba není v boxu
@@ -402,12 +406,36 @@
                 }
             });
             var validatedRule = $('.dragDropBox .button:not(.noSortable)', this).validateCedent(0);
+
+            console.log(config.allowedRuleAttributesCount);
+
+            if ($(this).attr('id')=='Antecedent'){
+                //kontrola počtu atributů v antecedentu
+                if (config.allowedRuleAttributesCount['antecedentMin']!=null){
+                    if (ruleAttributesCount<config.allowedRuleAttributesCount['antecedentMin']){
+                        showError($.i18n._('bre-validation-antecedentMinAttributesCount')+' '+config.allowedRuleAttributesCount['antecedentMin']);
+                    }
+                    if (ruleAttributesCount>config.allowedRuleAttributesCount['antecedentMax']){
+                        showError($.i18n._('bre-validation-antecedentMaxAttributesCount')+' '+config.allowedRuleAttributesCount['antecedentMax']);
+                    }
+                }
+            }else if ($(this).attr('id')=='Consequent'){
+                //kontrola počtu atributů v konsekventu
+              if (config.allowedRuleAttributesCount['antecedentMin']!=null){
+                if (ruleAttributesCount<config.allowedRuleAttributesCount['antecedentMin']){
+                  showError($.i18n._('bre-validation-consequentMinAttributesCount')+' '+config.allowedRuleAttributesCount['antecedentMin']);
+                }
+                if (ruleAttributesCount>config.allowedRuleAttributesCount['antecedentMax']){
+                  showError($.i18n._('bre-validation-consequentMaxAttributesCount')+' '+config.allowedRuleAttributesCount['antecedentMax']);
+                }
+              }
+            }
+
             if(typeof validatedRule[1] !== "undefined"){
-                return('<Cedent connective="'+validatedRule[1]+'">'+
-                        validatedRule[0]+'</Cedent>');
+                return '<Cedent connective="'+validatedRule[1]+'">'+validatedRule[0]+'</Cedent>';
             }
             else{
-                return(validatedRule[0]);
+                return validatedRule[0];
             }
         }
     };
