@@ -28,10 +28,6 @@
                       </fieldset>
                   </div>
                   <ul class="draggableBox draggableBoxRel">
-                      <li class="button dragDropBracket">(</li>
-                      <li class="button dragDropBracket">)</li>
-                      <li class="button dragDropElmLog" rel="Conjunction">and</li>
-                      <li class="button dragDropElmLog" rel="Disjunction">or</li>
                   </ul>
               </form>
           </div>
@@ -47,10 +43,6 @@
                       </fieldset>
                   </div>
                   <ul class="draggableBox draggableBoxRel">
-                      <li class="button dragDropBracket">(</li>
-                      <li class="button dragDropBracket">)</li>
-                      <li class="button dragDropElmLog" rel="Conjunction">and</li>
-                      <li class="button dragDropElmLog" rel="Disjunction">or</li>
                   </ul>
               </form>
           </div>

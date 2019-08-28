@@ -16,6 +16,7 @@ var init = function(){
             printAttributes(data);
         }
     });
+
     $.ajax({
         url: breResourcesUrl+"/i18n/"+config.locale+".json",
         dataType: "json",
@@ -142,7 +143,7 @@ $( window ).bind('beforeunload', function(){
  */
 $( document ).on("click", ".linkRuleEdit", function(){
     ruleToHtml($(this).attr('rel'));
-}).on("click", ".ruleDelete", function(){
+}).on("click", ".linkRuleDelete", function(){
     var ruleId=$(this).attr('rel');
     var ruleLink = $('#rule-'+ruleId+' a.linkRuleEdit');
     Apprise($.i18n._('bre-apprise-delrule-question', ruleLink.text()), {
@@ -343,7 +344,7 @@ var printRuleList = function(rulesetJson) {
 
         ruleLi.append('<span class="ruleActions">' +
                         '<a href="#" title="'+$.i18n._('bre-editRule')+'" rel="'+rule.id+'" class="edit linkRuleEdit"></a>' +
-                        '<a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" rel="'+rule.id+'" class="delete"></a>' +
+                        '<a href="#" title="'+$.i18n._('bre-link-ruleDelete')+'" rel="'+rule.id+'" class="delete linkRuleDelete"></a>' +
                       '</span>');
         ruleLi.append('<span class="ims"><span>Confidence: <span class="value">'+(Math.round(rule.confidence*1000)/1000)+'</span></span><span>Support: <span class="value">'+(Math.round(rule.support*1000)/1000)+'</span></span>');
 

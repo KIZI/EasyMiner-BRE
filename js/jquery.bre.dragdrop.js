@@ -419,6 +419,22 @@
 */
 applyConfig = function(){
     var newRow = false;
+
+    if(config['init-brackets']){
+      $('.dragDropBox').append('<li class="button noSortable dragDropBoxEnd">)</li><li class="button noSortable">(</li>');
+      $('.draggableBoxRel').append('<li class="button dragDropBracket">(</li><li class="button dragDropBracket">)</li>');
+    }
+
+    $(config.visibleConnections).each(function(){
+        if (this=='and'){
+            $('.draggableBoxRel').append('<li class="button dragDropElmLog" rel="Conjunction">and</li>');
+        }else if(this=='or'){
+            $('.draggableBoxRel').append('<li class="button dragDropElmLog" rel="Disjunction">or</li>');
+        }else if(this=='not'){
+            $('.draggableBoxRel').append('<li class="button dragDropElmLog" rel="Negation">not</li>');
+        }
+    });
+
     $(config.operators).each(function() {
         if(this.label === 'break'){
             newRow = true;
@@ -431,16 +447,10 @@ applyConfig = function(){
                     $operator.css('clear', 'left');
                     newRow = false;
                 }
-                //$('.draggableBoxRel').css({visibility:'visible'});//XXX standa původně přidáno
                 $('.draggableBoxRel').append($operator)
             }
         }
     });
-    //$('.draggableBoxRel').show();//XXX Standa: tato řádka byla přidána
-    if(config['init-brackets']){
-        $('.dragDropBox').append('<li class="button noSortable dragDropBoxEnd">)</li>\n\
-            <li class="button noSortable">(</li>');
-    }
     if(config['init-helper']){
         $('.dragDropBox').append('<li class="draggablePlace initHelper">'+$.i18n._('bre-initHelper')+'</li>');
     }
