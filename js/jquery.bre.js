@@ -244,12 +244,15 @@ $('#saveRule').click(function(){
     if(typeof actRule != 'undefined'){
         ruleXml += ' id="'+actRule+'"';
     }
-    ruleXml += '><Antecedent>'+
-            $('#Antecedent').validateRule()+'</Antecedent><Consequent>'+
+    ruleXml += '>';
+    var antecedentContent=$('#Antecedent').validateRule();
+    if (antecedentContent){
+      ruleXml +='<Antecedent>'+antecedentContent+'</Antecedent>';
+    }
+    ruleXml +='<Consequent>'+
             $('#Consequent').validateRule()+'</Consequent><Rating confidence="'+
             $("#confidence").val()+'" support="'+$("#support").val()+'"/></Rule>';
     //endregion sestavení XML zápisu pravidla
-
     //odeslání požadavku na uložení pravidla
     $.ajax({
         type: 'POST',
