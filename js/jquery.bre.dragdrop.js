@@ -407,8 +407,6 @@
             });
             var validatedRule = $('.dragDropBox .button:not(.noSortable)', this).validateCedent(0);
 
-            console.log(config.allowedRuleAttributesCount);
-
             if ($(this).attr('id')=='Antecedent'){
                 //kontrola počtu atributů v antecedentu
                 if (config.allowedRuleAttributesCount['antecedentMin']!=null){
