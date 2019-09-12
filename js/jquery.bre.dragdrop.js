@@ -162,9 +162,12 @@
             }
         }
         if($(this[i+2]).hasClass('dragDropElmBin')){
-            if (!binIsInAttribute(forRel,binRel)){
-                showError($.i18n._('bre-validation-cannotValToAttr', $(this[i]).text()), this[i+2]);
+            if (forRel!=('attribute:'+$(this[i+2]).attr('data-attribute'))){
+              showError($.i18n._('bre-validation-cannotValToAttr', $(this[i]).text()), this[i+2]);
             }
+            /*if (!binIsInAttribute(forRel,binRel)){
+                showError($.i18n._('bre-validation-cannotValToAttr', $(this[i]).text()), this[i+2]);
+            }*/
         } else if($(this[i+2]).hasClass('dragDropElmVal')){/*TODO aktuálně nepoužívané
             if(attType == "Interval" && !operatorIsThan){
                 showError($.i18n._('bre-validation-useBinOrChange'), this[i+2]);
