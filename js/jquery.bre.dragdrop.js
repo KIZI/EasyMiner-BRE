@@ -39,7 +39,7 @@
                 elmBins.push('<li class="button dragDropElmRel" rel="is">is</li>');
                 $(this).children('ValuesBin,Value').each(function(){
                     var value=$(this).text();
-                    elmBins.push('<li class="button dragDropElmBin" rel="bin:'+value+'">'+value+'</li>');
+                    elmBins.push('<li class="button dragDropElmBin" rel="bin:'+value+'" data-attribute="'+attributeId+'">'+value+'</li>');
                     if(i<(binsCount-1)){
                         elmCats.push('<li class="button dragDropElmLog" rel="Disjunction">or</li>');
                     }
@@ -652,7 +652,7 @@ processValues = function(rel){
         $('#values .draggableBox li').remove();
         $('#values .draggableBinsHeading').text(attribute.name);
         $.each(attribute.bins, function(key,bin){
-            var $li = $("<li>").html(bin).attr('rel','bin:'+bin).addClass('button dragDropElmBin');
+            var $li = $("<li>").html(bin).attr('rel','bin:'+bin).addClass('button dragDropElmBin').attr('data-attribute',attribute.id);
             $('#values .draggableBins').append($li);
         });
 
@@ -823,9 +823,8 @@ $(document).on('click', '.dragDropBox .button:not(.noSortable)', function (e) {
     }else if($(this).hasClass('dragDropElmBin')){
         var valId = $(this).attr('rel');
         if($('#values .draggableBox').find("li[rel='"+valId+"']").length == 0){
-            //TODO
-            var attributeId = binToFormat(valId);
-            processValues(attributeId);
+            var attributeId=$(this).attr('data-attribute');
+            processValues('attribute:'+attributeId);
         }
     }
     $('input:focus').blur();
