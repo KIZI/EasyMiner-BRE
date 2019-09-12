@@ -58,8 +58,6 @@ ruleToHtml = function(id) {
             var ruleAttribute=$(this);
             var attributeId=ruleAttribute.attr('attribute');
 
-            console.log('load attribute: '+attributeId);//TODO
-
             //region načtení atributu, pokud ještě není známý
             if(typeof dataJson['attribute:'+attributeId] == 'undefined'){
                 $.ajax({
