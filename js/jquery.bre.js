@@ -145,6 +145,7 @@ $( window ).bind('beforeunload', function(){
 $( document ).on("click", ".linkRuleEdit", function(){
     ruleToHtml($(this).attr('rel'));
 }).on("click", ".linkRuleDelete", function(){
+    hideAllMessages();
     var ruleId=$(this).attr('rel');
     var ruleLink = $('#rule-'+ruleId+' a.linkRuleEdit');
     Apprise($.i18n._('bre-apprise-delrule-question', ruleLink.text()), {
