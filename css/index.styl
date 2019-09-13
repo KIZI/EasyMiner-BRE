@@ -106,7 +106,8 @@ body{ font-size: 0.9em; font-family: "Tahoma", "Arial", "sans-serif"; }
 label{ font-size: 1.1em; }
 
 .draggableBox{ margin: 0; padding: 0; list-style-type: none; }
-.draggableBox .button{ float: left; cursor: move; }
+.draggableBox .button
+  float: left; cursor: move;
 .draggableBox .draggableBoxInfo{ width: 150px; }
 #navigation div.scrollable{ margin-top: 5px; height: 235px; overflow-y: auto; }
 #navigation div.scrollable h3{ clear: both; margin: 5px 0 2px; }
@@ -117,4 +118,10 @@ label{ font-size: 1.1em; }
 .draggableBoxRel .button{ /*float: left; */margin: 5px; overflow: hidden; }
 .draggableSearchReset{ float: right; }
 
-@import "_rules-list.styl"
+.dragDropBox .button.error
+  border-color #c00000 !important
+  color white !important
+  background #c00000 !important
+
+@import "_rules-list"
+@import "_messages"

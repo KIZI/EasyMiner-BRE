@@ -9,44 +9,56 @@
                   </p>
               </div>
           </div>
-          <div id="alertBox" class="ui-widget">
-              <div class="ui-corner-all">
-                  <p>
-                      <span class="ui-icon" style="float: left; margin-right: .3em;"></span>
-                      <strong></strong>
-                  </p>
+          <div class="messagesContainer">
+
+              <div class="messages" id="topMessages"></div>
+
+              <div id="alertBox" class="ui-widget">
+                  <div class="ui-corner-all">
+                      <p>
+                          <span class="ui-icon" style="float: left; margin-right: .3em;"></span>
+                          <strong></strong>
+                      </p>
+                  </div>
               </div>
+
+              <div class="ui-widget dragDropLeft messagesContainer autoHideErrors">
+                  <h3 class="ui-widget-header ui-state-focus ui-corner-top" data-i18n="bre-condition">Condition</h3>
+                  <div class="messages"></div>
+                  <form>
+                      <div class="ui-widget-content ui-corner-bottom">
+                          <fieldset id="Antecedent">
+                              <legend data-i18n="bre-condition" class="hidden">Condition</legend>
+                              <ul class="dragDropBox">
+                              </ul>
+                          </fieldset>
+                      </div>
+                      <ul class="draggableBox draggableBoxRel">
+                      </ul>
+                  </form>
+              </div>
+              <div class="newRow"></div>
+              <div class="ui-widget dragDropLeft messagesContainer autoHideErrors">
+                  <h3 class="ui-widget-header ui-state-focus ui-corner-top" data-i18n="bre-execute">Execute</h3>
+                  <div class="messages"></div>
+                  <form>
+                      <div class="ui-widget-content ui-corner-bottom">
+                          <fieldset id="Consequent">
+                              <legend data-i18n="bre-execute" class="hidden">Execute</legend>
+                              <ul class="dragDropBox">
+                              </ul>
+                          </fieldset>
+                      </div>
+                      <ul class="draggableBox draggableBoxRel">
+                      </ul>
+                  </form>
+              </div>
+
+              <div class="newRow"></div>
+
           </div>
-          <div class="ui-widget dragDropLeft">
-              <h3 class="ui-widget-header ui-state-focus ui-corner-top" data-i18n="bre-condition">Condition</h3>
-              <form>
-                  <div class="ui-widget-content ui-corner-bottom">
-                      <fieldset id="Antecedent">
-                          <legend data-i18n="bre-condition">Condition</legend>
-                          <ul class="dragDropBox">
-                          </ul>
-                      </fieldset>
-                  </div>
-                  <ul class="draggableBox draggableBoxRel">
-                  </ul>
-              </form>
-          </div>
-          <div class="newRow"></div>
-          <div class="ui-widget dragDropLeft">
-              <h3 class="ui-widget-header ui-state-focus ui-corner-top" data-i18n="bre-execute">Execute</h3>
-              <form>
-                  <div class="ui-widget-content ui-corner-bottom">
-                      <fieldset id="Consequent">
-                          <legend data-i18n="bre-execute">Execute</legend>
-                          <ul class="dragDropBox">
-                          </ul>
-                      </fieldset>
-                  </div>
-                  <ul class="draggableBox draggableBoxRel">
-                  </ul>
-              </form>
-          </div>
-          <div class="newRow"></div>
+
+
           <div class="fl">
               <label for="confidence" data-i18n="bre-confidence">Confidence:</label>
               <input id="confidence" name="confidence" value="0.01">
@@ -57,6 +69,8 @@
               <button id="newRule"><span data-i18n="bre-button-newRule">New rule</span></button>
               <button id="saveRule"><span data-i18n="bre-button-saveRule">Save rule</span></button>
           </div>
+
+
           <div class="newRow"></div>
           <div id="rules" class="ui-widget">
               <h3 class="ui-widget-header ui-state-default ui-corner-top" data-i18n="bre-head-rulesEdit">Rules to edit</h3>

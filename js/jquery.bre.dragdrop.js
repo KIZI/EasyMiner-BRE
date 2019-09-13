@@ -530,6 +530,7 @@ binIsInAttribute=function(attribute,bin){
 emptyConExe = function(){
     $('.initHelper').remove();
     $('#Antecedent .button:not(.noSortable), #Consequent .button:not(.noSortable)').remove();
+    hideAllMessages();
     actRule = undefined;
 };
 
@@ -721,26 +722,13 @@ showError = function(text, elm){
 showSmallError = function(text, elm){
     if(elm !== null && typeof elm != 'undefined'){
         var $elm = $(elm);
-        $elm.addClass('red');
-        $elm.tooltip({
-            items: '.red',
-            content: text,
-      position: {
-        my: "center bottom-5",
-        at: "center top",
-        collision: "fit",
-        using: function( position, feedback ) {
-          $( this ).css( position );
-          $( "<div>" )
-            .addClass( "arrow" )
-            .appendTo( this );
-        }
-      }
-        });
-        $elm.tooltip('open');
-        setTimeout(function() {
-            $elm.removeClass('red').tooltip('destroy');
-        }, 7000);
+
+        $elm.addClass('error');
+
+        var messageDiv=$('<div class="alert error"></div>');
+        messageDiv.text(text);
+
+        $elm.closest('.messagesContainer').children('.messages').append(messageDiv);
     }
     else{
         showAlert(text, 'error');
@@ -755,11 +743,21 @@ showSmallError = function(text, elm){
  */
 showAlert = function(text, type){
     var otherType = (type == 'success') ? 'error' : 'success';
-    $('#alertBox').removeClass(otherType).addClass(type).css('opacity', '1').find('strong').text(text);
-    setTimeout(function() {
-        $('#alertBox').animate({opacity:0});
-    }, 7000);
+
+    var messageDiv=$('<div class="alert"></div>');
+    messageDiv.addClass(type);
+    messageDiv.text(text);
+
+    $('#topMessages').append(messageDiv);
+
     window.scrollTo(0, 0);
+};
+
+/**
+ * Function for hidding of all messages.
+ */
+hideAllMessages = function(){
+    $('.messagesContainer > .messages').html('');
 };
 
 /** 
@@ -831,6 +829,16 @@ $(document).on('click', '.dragDropBox .button:not(.noSortable)', function (e) {
         }
     }
     $('input:focus').blur();
+});
+
+/*
+ * Hide messagesContainer messages on click
+ */
+$(document).on('click','.messagesContainer',function(){
+    $(this).children('.messages').html('');
+    if ($(this).hasClass('autoHideErrors')){
+        $(this).find('.error').removeClass('error');
+    }
 });
 
 /*

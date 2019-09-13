@@ -241,6 +241,7 @@ $('#newRule').click(function(){
 
 $('#saveRule').click(function(){
     var lastId;
+    hideAllMessages();
     //region sestavení XML zápisu pravidla
     var ruleXml = '<Rule xmlns="'+config["rule-ns"]+'"';
     if(typeof actRule != 'undefined'){
