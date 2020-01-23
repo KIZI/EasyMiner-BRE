@@ -410,6 +410,8 @@
             });
             var validatedRule = $('.dragDropBox .button:not(.noSortable)', this).validateCedent(0);
 
+            ruleAttributesCount=validatedRule[2];
+
             if ($(this).attr('id')=='Antecedent'){
                 //kontrola počtu atributů v antecedentu
                 if (config.allowedRuleAttributesCount['antecedentMin']!=null){
@@ -422,12 +424,12 @@
                 }
             }else if ($(this).attr('id')=='Consequent'){
                 //kontrola počtu atributů v konsekventu
-              if (config.allowedRuleAttributesCount['antecedentMin']!=null){
-                if (ruleAttributesCount<config.allowedRuleAttributesCount['antecedentMin']){
-                  showError($.i18n._('bre-validation-consequentMinAttributesCount')+' '+config.allowedRuleAttributesCount['antecedentMin']);
+                if (config.allowedRuleAttributesCount['consequentMin']!=null){
+                    if (ruleAttributesCount<config.allowedRuleAttributesCount['consequentMin']){
+                    showError($.i18n._('bre-validation-consequentMinAttributesCount')+' '+config.allowedRuleAttributesCount['consequentMin']);
                 }
-                if (ruleAttributesCount>config.allowedRuleAttributesCount['antecedentMax']){
-                  showError($.i18n._('bre-validation-consequentMaxAttributesCount')+' '+config.allowedRuleAttributesCount['antecedentMax']);
+                if (ruleAttributesCount>config.allowedRuleAttributesCount['consequentMax']){
+                    showError($.i18n._('bre-validation-consequentMaxAttributesCount')+' '+config.allowedRuleAttributesCount['consequentMax']);
                 }
               }
             }
