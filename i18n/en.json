@@ -12,7 +12,7 @@
     "bre-execute": "Consequent",
     "bre-confidence": "Confidence",
     "bre-support": "Support",
-    "bre-initHelper": "To begin just drop a metaatribute here...",
+    "bre-initHelper": "To begin just drop an atribute here...",
     "bre-button-newRule": "New rule",
     "bre-button-resetServer": "Reset test server",
     "bre-button-saveRule": "Save rule",
